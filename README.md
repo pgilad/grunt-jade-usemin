@@ -35,7 +35,24 @@ grunt.initConfig({
 })
 ```
 
+### How to use in a Jade file
+This is most effectively used in conjunction with the environment variable in express
+i.e process.env or node env.
+#for the following to work, you need to expose your `env` variable when rendering the jade file.
+This is an example `index.jade`:
+
+```jade
+if env === 'development'
+    //-<!-- build:js test/compiled/compiled.min.js -->
+    script(src='/test/fixtures/script1.js')
+    script(src='/test/fixtures/script2.js')
+    //-<!-- endbuild -->
+else
+    script(src='/test/compiled/compiled.min.js')
+```
+
 ### Options
+None yet
 
 ### Usage Examples
 

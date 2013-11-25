@@ -14,7 +14,7 @@ module.exports = function (grunt) {
 
     // Project configuration.
     grunt.initConfig({
-        jshint     : {
+        jshint    : {
             all    : [
                 'Gruntfile.js',
                 'tasks/**/*.js',
@@ -27,14 +27,14 @@ module.exports = function (grunt) {
         },
 
         // Before generating any new files, remove any previously-created files.
-        clean      : {
+        clean     : {
             tests: ['tmp']
         },
 
         // Configuration to be run (and then tested).
         jadeUsemin: {
-            build: {
-                src: []
+            test: {
+                src: 'test/fixtures/**/*.jade'
             }
         },
 
@@ -61,7 +61,7 @@ module.exports = function (grunt) {
 
     // Whenever the "test" task is run, first clean the "tmp" dir, then run this
     // plugin's task(s), then test the result.
-    grunt.registerTask('test', ['clean', 'jadeUsemin', 'nodeunit']);
+    grunt.registerTask('test', ['clean', 'jadeUsemin:test', 'nodeunit']);
 
     // By default, lint and run all tests.
     grunt.registerTask('default', ['jshint', 'test']);

@@ -11,7 +11,7 @@ var _ = require('lodash');
 module.exports = function (grunt) {
     var jadeUsemin = require('./lib/jade_usemin').task(grunt);
 
-    grunt.registerMultiTask('jadeUseMin', 'concat and minify scripts in Jade files with UseMin format', function () {
+    grunt.registerMultiTask('jade_usemin', 'concat and minify scripts in Jade files with UseMin format', function () {
 
         jadeUsemin.options = this.options();
         grunt.verbose.writeflags(jadeUsemin.options, 'Target ' + this.target + ' Options:');

@@ -17,7 +17,7 @@ module.exports = function (grunt) {
         jshint     : {
             all    : [
                 'Gruntfile.js',
-                'tasks/*.js',
+                'tasks/**/*.js',
                 '<%= nodeunit.tests %>'
             ],
             options: {
@@ -32,7 +32,7 @@ module.exports = function (grunt) {
         },
 
         // Configuration to be run (and then tested).
-        jade_usemin: {
+        jadeUsemin: {
             build: {
                 src: []
             }
@@ -44,7 +44,7 @@ module.exports = function (grunt) {
                     //should task report already updated dependencies
                     reportUpdated: false,
                     //can be 'force'|'report'|'prompt'
-                    updateType   : "prompt"
+                    updateType   : 'prompt'
                 }
             }
         },
@@ -61,7 +61,7 @@ module.exports = function (grunt) {
 
     // Whenever the "test" task is run, first clean the "tmp" dir, then run this
     // plugin's task(s), then test the result.
-    grunt.registerTask('test', ['clean', 'jade_usemin', 'nodeunit']);
+    grunt.registerTask('test', ['clean', 'jadeUsemin', 'nodeunit']);
 
     // By default, lint and run all tests.
     grunt.registerTask('default', ['jshint', 'test']);

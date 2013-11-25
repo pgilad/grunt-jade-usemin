@@ -17,14 +17,14 @@ Once the plugin has been installed, it may be enabled inside your Gruntfile with
 grunt.loadNpmTasks('grunt-jade-usemin');
 ```
 
-## The "jade_usemin" task
+## The "jadeUsemin" task
 
 ### Overview
-In your project's Gruntfile, add a section named `jade_usemin` to the data object passed into `grunt.initConfig()`.
+In your project's Gruntfile, add a section named `jadeUsemin` to the data object passed into `grunt.initConfig()`.
 
 ```js
 grunt.initConfig({
-  jade_usemin: {
+  jadeUsemin: {
     options: {
       // Task-specific options go here.
     },
@@ -37,18 +37,6 @@ grunt.initConfig({
 
 ### Options
 
-#### options.separator
-Type: `String`
-Default value: `',  '`
-
-A string value that is used to do something with whatever.
-
-#### options.punctuation
-Type: `String`
-Default value: `'.'`
-
-A string value that is used to do something else with whatever else.
-
 ### Usage Examples
 
 #### Default Options
@@ -56,10 +44,10 @@ In this example, the default options are used to do something with whatever. So 
 
 ```js
 grunt.initConfig({
-  jade_usemin: {
+  jadeUsemin: {
     options: {},
     files: {
-      'dest/default_options': ['src/testing', 'src/123'],
+      src: ['src/testing', 'src/123'],
     },
   },
 })
@@ -70,13 +58,12 @@ In this example, custom options are used to do something else with whatever else
 
 ```js
 grunt.initConfig({
-  jade_usemin: {
+  jadeUsemin: {
     options: {
-      separator: ': ',
-      punctuation: ' !!!',
+
     },
     files: {
-      'dest/default_options': ['src/testing', 'src/123'],
+      src: ['app/js/src/*.js']
     },
   },
 })

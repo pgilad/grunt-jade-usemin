@@ -2,8 +2,9 @@
  * Created by Gilad Peleg on 25/11/13.
  */
 
-var path = require('path'),
-    moment = require('moment'),
+'use strict';
+
+var moment = require('moment'),
     fs = require('fs'),
     _ = require('lodash');
 
@@ -24,7 +25,7 @@ exports.task = function (grunt) {
 
     exports.prepareConcatAndUglify = function () {
         //define concat settings
-        this.concat.jadeUseMin = {
+        exports.concat.jadeUsemin = {
             options: {
                 banner   : '',
                 footer   : '',
@@ -39,7 +40,7 @@ exports.task = function (grunt) {
             files  : []
         };
 
-        this.uglify.jadeUseMin = {
+        exports.uglify.jadeUsemin = {
             options: {
                 report          : 'min',
                 preserveComments: 'some',
@@ -52,8 +53,8 @@ exports.task = function (grunt) {
     exports.processTasks = function () {
         var uglifyTarget, totalFiles = 0;
 
-        _.each(this.extractedTargets, function (item, target) {
-            this.concat.jadeUseMin.files.push({
+        _.each(exports.extractedTargets, function (item, target) {
+            exports.concat.jadeUsemin.files.push({
                 src : item.src,
                 dest: target
             });
@@ -63,10 +64,10 @@ exports.task = function (grunt) {
 
             uglifyTarget = {};
             uglifyTarget[target] = target;
-            this.uglify.jadeUseMin.files.push(uglifyTarget);
-        }, this);
+            exports.uglify.jadeUsemin.files.push(uglifyTarget);
+        });
 
-        this.totalFiles = totalFiles;
+        exports.totalFiles = totalFiles;
     };
 
     exports.buildObjectFromJade = function (location) {
@@ -75,8 +76,8 @@ exports.task = function (grunt) {
 
         for (var i = 0; i < file.length; i++) {
             var line = file[i];
-            if (line.match(this.regex.buildRegex)) {
-                var extracted = line.match(this.regex.buildExtractRegex);
+            if (line.match(exports.regex.buildRegex)) {
+                var extracted = line.match(exports.regex.buildExtractRegex);
                 var type = extracted[1];
                 var target = extracted[2];
 
@@ -90,7 +91,7 @@ exports.task = function (grunt) {
                 }
 
                 //default empty target
-                this.extractedTargets[target] = {
+                exports.extractedTargets[target] = {
                     type: type,
                     src : []
                 };
@@ -102,13 +103,13 @@ exports.task = function (grunt) {
                     var nextLine = file[j];
 
                     //end of build, skip to next
-                    if (nextLine.match(this.regex.endBuildRegex)) {
+                    if (nextLine.match(exports.regex.endBuildRegex)) {
                         i = ++j;
                         break;
                     }
                     //inside build
                     else {
-                        var src = nextLine.match(this.regex.extractSourceRegex);
+                        var src = nextLine.match(exports.regex.extractSourceRegex);
                         if (src && src[1]) {
                             src = src[1];
                             if (src.charAt(0) === '/') {
@@ -117,10 +118,10 @@ exports.task = function (grunt) {
 
                             //if path actually exists
                             if (fs.existsSync(src)) {
-                                this.extractedTargets[target].src.push(src);
+                                exports.extractedTargets[target].src.push(src);
                             }
                             else {
-                                grunt.log.warn("Found script src that doesn't exist: " + src);
+                                grunt.log.warn('Found script src that doesn\'t exist: ' + src);
                             }
                         }
                     }

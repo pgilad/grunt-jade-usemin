@@ -5,13 +5,14 @@
  * Copyright (c) 2013 Gilad Peleg
  * Licensed under the MIT license.
  */
+'use strict';
 
 var _ = require('lodash');
 
 module.exports = function (grunt) {
     var jadeUsemin = require('./lib/jade_usemin').task(grunt);
 
-    grunt.registerMultiTask('jade_usemin', 'concat and minify scripts in Jade files with UseMin format', function () {
+    grunt.registerMultiTask('jadeUsemin', 'concat and minify scripts in Jade files with UseMin format', function () {
 
         jadeUsemin.options = this.options();
         grunt.verbose.writeflags(jadeUsemin.options, 'Target ' + this.target + ' Options:');
@@ -34,10 +35,10 @@ module.exports = function (grunt) {
         grunt.config('uglify', jadeUsemin.uglify);
 
         //assign a finalize task to notify user that task finished, and how many files processed
-        grunt.registerTask('jadeUseMinComplete', function () {
-            grunt.log.oklns('jadeUseMin finished after processing ' + jadeUsemin.totalFiles + ' files.');
+        grunt.registerTask('jadeUseminComplete', function () {
+            grunt.log.oklns('jadeUsemin finished after processing ' + jadeUsemin.totalFiles + ' files.');
         });
 
-        grunt.task.run(['concat:jadeUseMin', 'uglify:jadeUseMin', 'jadeUseMinComplete']);
+        grunt.task.run(['concat:jadeUsemin', 'uglify:jadeUsemin', 'jadeUseminComplete']);
     });
 };

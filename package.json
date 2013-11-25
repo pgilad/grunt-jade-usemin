@@ -1,34 +1,34 @@
 {
-    "name"           : "grunt-jade-usemin",
-    "version"        : "0.1.0",
-    "description"    : "Grunt plugin for running UseMin on Jade files",
-    "homepage"       : "https://github.com/pgilad/grunt-jade-usemin.git",
-    "bugs"           : "https://github.com/pgilad/grunt-jade-usemin.git/issues",
-    "author"         : {
+    "name"            : "grunt-jade-usemin",
+    "version"         : "0.1.0",
+    "description"     : "Grunt plugin for running UseMin on Jade files",
+    "homepage"        : "https://github.com/pgilad/grunt-jade-usemin.git",
+    "bugs"            : "https://github.com/pgilad/grunt-jade-usemin.git/issues",
+    "author"          : {
         "name" : "Gilad Peleg",
         "email": "giladp007@gmail.com"
     },
-    "keywords"       : [
+    "keywords"        : [
         "gruntplugin",
         "jade",
         "usemin",
         "build",
         "minify"
     ],
-    "main"           : "Gruntfile.js",
-    "engines"        : {
+    "main"            : "Gruntfile.js",
+    "engines"         : {
         "node": ">= 0.8.0"
     },
-    "repository"     : {
+    "repository"      : {
         "type": "git",
         "url" : "https://github.com/pgilad/grunt-jade-usemin.git"
     },
-    "licenses"       : [
+    "licenses"        : [
         {
             "type": "MIT"
         }
     ],
-    "devDependencies": {
+    "devDependencies" : {
         "grunt-contrib-jshint"  : "~0.7.2",
         "grunt-contrib-nodeunit": "~0.2.2",
         "grunt-contrib-clean"   : "~0.5.0",
@@ -37,11 +37,16 @@
         "jshint-stylish"        : "~0.1.3",
         "grunt-dev-update"      : "~0.1.5"
     },
-    "scripts"        : {
+    "peerDependencies": {
+        "grunt": "~0.4.1"
+    },
+    "scripts"         : {
         "test": "grunt test"
     },
-    "dependencies"   : {
-        "lodash": "~2.3.0",
-        "moment": "~2.4.0"
+    "dependencies"    : {
+        "lodash"              : "~2.3.0",
+        "moment"              : "~2.4.0",
+        "grunt-contrib-concat": "~0.3.0",
+        "grunt-contrib-uglify": "~0.2.7"
     }
 }

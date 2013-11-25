@@ -6,46 +6,38 @@
  * Licensed under the MIT license.
  */
 
-'use strict';
+var _ = require('lodash');
 
 module.exports = function (grunt) {
+    var jadeUsemin = require('./lib/jade_usemin').task(grunt);
 
-  // Please see the Grunt documentation for more information regarding task
-  // creation: http://gruntjs.com/creating-tasks
+    grunt.registerMultiTask('jadeUseMin', 'concat and minify scripts in Jade files with UseMin format', function () {
 
-  grunt.registerMultiTask('jade_usemin', 'Grunt plugin for running UseMin on Jade files', function () {
+        jadeUsemin.options = this.options();
+        grunt.verbose.writeflags(jadeUsemin.options, 'Target ' + this.target + ' Options:');
 
-    // Merge task-specific and/or target-specific options with these defaults.
-    var options = this.options({
-      punctuation: '.',
-      separator: ', '
+        jadeUsemin.uglify = grunt.config('uglify') || {};
+        jadeUsemin.concat = grunt.config('concat') || {};
+
+        jadeUsemin.prepareConcatAndUglify();
+
+        //go through each expanded file src to create extracted files
+        _.each(this.filesSrc, function (file) {
+            jadeUsemin.buildObjectFromJade(file);
+        });
+
+        //add to concat task
+        jadeUsemin.processTasks();
+
+        //set temporary configs
+        grunt.config('concat', jadeUsemin.concat);
+        grunt.config('uglify', jadeUsemin.uglify);
+
+        //assign a finalize task to notify user that task finished, and how many files processed
+        grunt.registerTask('jadeUseMinComplete', function () {
+            grunt.log.oklns('jadeUseMin finished after processing ' + jadeUsemin.totalFiles + ' files.');
+        });
+
+        grunt.task.run(['concat:jadeUseMin', 'uglify:jadeUseMin', 'jadeUseMinComplete']);
     });
-
-    // Iterate over all specified file groups.
-    this.files.forEach(function (file) {
-      // Concat specified files.
-      var src = file.src.filter(function (filepath) {
-        // Warn on and remove invalid source files (if nonull was set).
-        if (!grunt.file.exists(filepath)) {
-          grunt.log.warn('Source file "' + filepath + '" not found.');
-          return false;
-        } else {
-          return true;
-        }
-      }).map(function (filepath) {
-        // Read file source.
-        return grunt.file.read(filepath);
-      }).join(grunt.util.normalizelf(options.separator));
-
-      // Handle options.
-      src += options.punctuation;
-
-      // Write the destination file.
-      grunt.file.write(file.dest, src);
-
-      // Print a success message.
-      grunt.log.writeln('File "' + file.dest + '" created.');
-    });
-  });
-
 };

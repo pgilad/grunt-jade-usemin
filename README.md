@@ -37,7 +37,7 @@ grunt.initConfig({
 
 ### How to use in a Jade file
 This is most effectively used in conjunction with the environment variable in express
-i.e process.env or node env.
+i.e `process.env` or `node env`.
 ##### for the following to work, you need to expose your `env` variable when rendering the jade file.
 This is an example `index.jade`:
 

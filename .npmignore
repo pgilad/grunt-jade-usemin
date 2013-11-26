@@ -1,0 +1,14 @@
+.editorconfig
+.idea
+.gitattributes
+*.md
+.jshintrc
+.npmignore
+.git*
+.DS_Store
+test/
+node_modules
+Gruntfile.js
+npm-debug.log
+Gruntfile.js
+tmp

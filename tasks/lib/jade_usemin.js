@@ -31,9 +31,7 @@ exports.task = function (grunt) {
                 footer   : '',
                 separator: '\n',
                 process  : function (src, filepath) {
-                    return '\n/*! START:' + filepath +
-                        ', COMPILED:' + moment().format('MMMM Do YYYY, hh:mm') +
-                        '**/\n' +
+                    return '\n/*! START:' + filepath + '**/\n' +
                         src + '\n/*! END:' + filepath + '**/';
                 }
             },

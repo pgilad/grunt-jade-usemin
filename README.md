@@ -19,7 +19,34 @@ grunt.loadNpmTasks('grunt-jade-usemin');
 
 ## The "jadeUsemin" task
 
-### Overview
+This project is based on the [grunt-usemin](https://github.com/yeoman/grunt-usemin) Project.
+grunt-jade-usemin is meant to be an assisting tool in preparing projects for build.
+The plugin will scan the parsed `.jade` files and extract the scripts from them.
+
+Those scripts are then concated and minified into a single minified file.
+
+### How to use in a Jade file
+
+This is most effectively used in conjunction with the environment variable in express
+i.e `process.env` or `node env`.
+
+##### for the following to work, you need to expose your `env` variable when rendering the jade file.
+This is an example `index.jade`:
+
+```jade
+if env === 'development'
+    //-<!-- build:js test/compiled/compiled.min.js -->
+    script(src='/test/fixtures/script1.js')
+    script(src='/test/fixtures/script2.js')
+    //-<!-- endbuild -->
+else
+    script(src='/test/compiled/compiled.min.js')
+```
+
+Running `jadeUsemin` on this file will concat & uglify the script files `script1.js` and `script2.js`
+into a minified file `compiled.min.js`.
+
+### Gruntfile.js basic task
 In your project's Gruntfile, add a section named `jadeUsemin` to the data object passed into `grunt.initConfig()`.
 
 ```js
@@ -35,43 +62,12 @@ grunt.initConfig({
 })
 ```
 
-### How to use in a Jade file
-This is most effectively used in conjunction with the environment variable in express
-i.e `process.env` or `node env`.
-##### for the following to work, you need to expose your `env` variable when rendering the jade file.
-This is an example `index.jade`:
-
-```jade
-if env === 'development'
-    //-<!-- build:js test/compiled/compiled.min.js -->
-    script(src='/test/fixtures/script1.js')
-    script(src='/test/fixtures/script2.js')
-    //-<!-- endbuild -->
-else
-    script(src='/test/compiled/compiled.min.js')
-```
-
 ### Options
 None yet
 
 ### Usage Examples
 
 #### Default Options
-
-```js
-grunt.initConfig({
-  jadeUsemin: {
-    main: {
-      options: {},
-      files: {
-        src: ['src/testing', 'src/123'],
-      }
-    }
-  },
-})
-```
-
-#### Custom Options
 
 ```js
 grunt.initConfig({

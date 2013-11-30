@@ -24,11 +24,21 @@ grunt-jade-usemin is meant to be an assisting tool in preparing projects for bui
 The plugin will scan the parsed `.jade` files and extract the scripts from them.
 
 Those scripts are then concated and minified into a single minified file.
+jadeUsemin currently supports 2 types of `sources` to concat & minify: `js` and `css`.
 
 ### How to use in a Jade file
 
 This is most effectively used in conjunction with the environment variable in express
 i.e `process.env` or `node env`.
+
+jadeUsemin simply scan for the following line:
+`<!-- build:<type> <target -->
+Where `<target>` can be either `js` or `css`.
+
+and adds the scripts/styles inside the lines until it meets the closing:
+`<!-- endbuild -->
+
+Which signifies the end of a usemin target.
 
 ##### for the following to work, you need to expose your `env` variable when rendering the jade file.
 This is an example `index.jade`:
@@ -46,6 +56,16 @@ else
 Running `jadeUsemin` on this file will concat & uglify the script files `script1.js` and `script2.js`
 into a minified file `compiled.min.js`.
 
+Another example is using jadeUsemin with css files:
+```
+//-<!-- build:css test/compiled/style.min.css -->
+link(rel='stylesheet', href='/test/fixtures/style1.css')
+link(rel='stylesheet', href='/test/fixtures/style2.css')
+//-<!-- endbuild -->
+```
+
+jadeUsemin will create a minified css file called style.min.css which is a concated and minified version of both styles.
+
 ### Gruntfile.js basic task
 In your project's Gruntfile, add a section named `jadeUsemin` to the data object passed into `grunt.initConfig()`.
 
@@ -55,7 +75,7 @@ grunt.initConfig({
     main: {
       options: {},
       files: {
-        src: ['src/testing', 'src/123'],
+        src: ['src/index.jade', 'src/index2.jade']
       }
     }
   },

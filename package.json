@@ -2,8 +2,8 @@
   "name": "grunt-jade-usemin",
   "version": "0.1.2",
   "description": "Grunt plugin for running UseMin on Jade files",
-  "homepage": "https://github.com/pgilad/grunt-jade-usemin.git",
-  "bugs": "https://github.com/pgilad/grunt-jade-usemin.git/issues",
+  "homepage": "https://github.com/pgilad/grunt-jade-usemin",
+  "bugs": "https://github.com/pgilad/grunt-jade-usemin/issues",
   "author": {
     "name": "Gilad Peleg",
     "email": "giladp007@gmail.com"
@@ -46,6 +46,7 @@
   "dependencies": {
     "lodash": "~2.3.0",
     "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-uglify": "~0.2.7"
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-cssmin": "~0.7.0"
   }
 }

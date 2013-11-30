@@ -28,13 +28,13 @@ module.exports = function (grunt) {
 
         // Before generating any new files, remove any previously-created files.
         clean     : {
-            tests: ['tmp']
+            tests: ['tmp', 'test/compiled']
         },
 
         // Configuration to be run (and then tested).
         jadeUsemin: {
             test: {
-                src: 'test/fixtures/**/*.jade'
+                src: 'test/fixtures/**/sample2.jade'
             }
         },
 

@@ -29,8 +29,6 @@ exports.jadeUsemin = {
     },
     defaultOptions: function (test) {
 
-        console.log(typeof grunt);
-
         test.ok(true);
 
         test.done();

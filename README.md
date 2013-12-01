@@ -31,12 +31,12 @@ jadeUsemin currently supports 2 types of `sources` to concat & minify: `js` and 
 This is most effectively used in conjunction with the environment variable in express
 i.e `process.env` or `node env`.
 
-jadeUsemin simply scan for the following line:
-`<!-- build:<type> <target -->
+jadeUsemin simply scans for the following line:
+`<!-- build:<type> <target -->`
 Where `<target>` can be either `js` or `css`.
 
 and adds the scripts/styles inside the lines until it meets the closing:
-`<!-- endbuild -->
+`<!-- endbuild -->`
 
 Which signifies the end of a usemin target.
 

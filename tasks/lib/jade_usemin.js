@@ -12,6 +12,7 @@ exports.task = function (grunt) {
         options: {}
     };
 
+    //contains all of our targets
     exports.extractedTargets = {};
 
     // set up relevant regex for jade find
@@ -23,6 +24,7 @@ exports.task = function (grunt) {
         cssSourceRegex   : /href=['"]((\w*[\/._-]*)+)['"]/
     };
 
+    //set up default tasks options
     exports.defaultTasks = {
         concat: {
             options: {
@@ -54,6 +56,12 @@ exports.task = function (grunt) {
         }
     };
 
+    /**
+     * Add Concat file target
+     * @param {Object} concat
+     * @param src
+     * @param dest
+     */
     exports.addConcatFileTarget = function (concat, src, dest) {
         concat.files.push({
             src : src,
@@ -62,7 +70,7 @@ exports.task = function (grunt) {
     };
 
     /**
-     *
+     * Adds uglify target
      * @param uglify
      * @param target
      */
@@ -186,5 +194,4 @@ exports.task = function (grunt) {
     };
 
     return exports;
-
 };

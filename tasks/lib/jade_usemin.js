@@ -4,7 +4,7 @@
 
 'use strict';
 
-var fs = require('fs'),
+var path = require('path'),
     _ = require('lodash');
 
 exports.task = function (grunt) {
@@ -122,6 +122,11 @@ exports.task = function (grunt) {
         return null;
     };
 
+    exports.insertSrcIntoTargetObj = function (tempExtraction, target, src) {
+        grunt.verbose.writelns('Adding src file ' + src);
+        tempExtraction[target].src.push(src);
+    };
+
     exports.extractTargetsFromJade = function (location, extractedTargets) {
         //current temp file
         var srcRegex, insideBuild = false;
@@ -161,10 +166,11 @@ exports.task = function (grunt) {
             }
             //got to end of build: <!-- endbuild -->
             else if (line.match(exports.regex.endBuildRegex) && type && target) {
-                insideBuild = false;
+                grunt.verbose.writelns('Found endbuild pattern in line ', lineIndex);
                 extractedTargets[target] = {};
                 _.merge(extractedTargets[target], tempExtraction[target]);
-                type = target = null;
+                grunt.log.oklns('Finished with target block:', target);
+                type = target = insideBuild = null;
             }
             //we are inside a build:<type> block
             else {
@@ -178,11 +184,21 @@ exports.task = function (grunt) {
                     }
 
                     //if path actually exists
-                    if (fs.existsSync(src)) {
-                        tempExtraction[target].src.push(src);
+                    if (grunt.file.exists(src)) {
+                        exports.insertSrcIntoTargetObj(tempExtraction, target, src);
                     }
                     else {
-                        grunt.log.warn("Found script src that doesn't exist: " + src);
+                        //attempt to resolve path relative to location (where jade file is)
+                        var locationPath = path.dirname(location);
+                        var newSrcPath = path.resolve(locationPath, src);
+                        grunt.verbose.writelns('Src file ' + src + " wasn't found. Looking for it relative to jade file");
+                        if (grunt.file.exists(newSrcPath)) {
+                            exports.insertSrcIntoTargetObj(tempExtraction, target, newSrcPath);
+                        }
+                        //src file wasn't found
+                        else {
+                            grunt.log.warn("Found script src that doesn't exist: " + src);
+                        }
                     }
                 }
             }

@@ -1,4 +1,4 @@
-# grunt-jade-usemin
+# grunt-jade-usemin [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
 > Grunt plugin for running UseMin on Jade files
 

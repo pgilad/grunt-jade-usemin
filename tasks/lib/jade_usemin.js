@@ -91,7 +91,9 @@ exports.task = function (grunt) {
     exports.processTasks = function (parameters) {
         var extractedTargets = parameters.extractedTargets;
         var concat = parameters.concat;
-        var uglify = parameters.uglify;
+        if(exports.options.uglify) {
+            var uglify = parameters.uglify;
+        }
         var cssmin = parameters.cssmin;
         var totalFiles = 0;
 
@@ -101,7 +103,7 @@ exports.task = function (grunt) {
             grunt.log.oklns('Target ' + target + ' contains ' + item.src.length + ' files.');
             totalFiles += item.src.length;
 
-            if (item.type === 'js') {
+            if (item.type === 'js' && uglify) {
                 exports.addUglifyTarget(uglify, target);
             }
             else if (item.type === 'css') {

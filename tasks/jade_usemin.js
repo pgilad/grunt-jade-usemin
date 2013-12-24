@@ -1,6 +1,6 @@
 /*
  * grunt-jade-usemin
- * 
+ *
  *
  * Copyright (c) 2013 Gilad Peleg
  * Licensed under the MIT license.
@@ -17,7 +17,17 @@ module.exports = function (grunt) {
 
         jadeUsemin.options = this.options();
         grunt.verbose.writeflags(jadeUsemin.options, 'Target Options');
-        var tasks = ['concat', 'uglify', 'cssmin'];
+        var tasks = [];
+        if(jadeUsemin.options && jadeUsemin.options.uglify === false) {
+            grunt.log.writeln('execute only concat!');
+            tasks.push('concat');
+            tasks.push('cssmin');
+        } else {
+            grunt.log.writeln('execute concat and uglify');
+            tasks.push('concat');
+            tasks.push('uglify');
+            tasks.push('cssmin');
+        }
 
         //setup
         _.each(tasks, function (task) {

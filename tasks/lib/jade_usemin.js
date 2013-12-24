@@ -2,6 +2,7 @@
  * Created by Gilad Peleg on 25/11/13.
  */
 
+/* global grunt */
 'use strict';
 
 var path = require('path'),
@@ -137,8 +138,10 @@ exports.task = function (grunt) {
         var file = grunt.file.read(location).split('\n');
 
         _.each(file, function (line, lineIndex) {
+
             //if still scanning for build:<type>
             if (!insideBuild) {
+
                 //look for pattern build:<type>
                 if (line.match(exports.regex.buildRegex)) {
                     extracted = line.match(exports.regex.buildExtractRegex);
@@ -176,6 +179,12 @@ exports.task = function (grunt) {
             }
             //we are inside a build:<type> block
             else {
+
+                //replace path from options.replacePath
+                _.each(exports.options.replacePath, function(path, key){
+                    line = line.replace(key, path);
+                });
+
                 srcRegex = exports.getSrcRegex(type);
                 var src = line.match(srcRegex);
 

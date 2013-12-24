@@ -5,6 +5,8 @@
  * Copyright (c) 2013 Gilad Peleg
  * Licensed under the MIT license.
  */
+
+/* global grunt */
 'use strict';
 
 var _ = require('lodash'),
@@ -42,6 +44,7 @@ module.exports = function (grunt) {
             var ext;
             grunt.log.writeln('Processing jade file', file);
             ext = path.extname(file);
+
             if (ext !== '.jade') {
                 grunt.log.warn('Not processing %s because of unsupported extension: %s', file, ext);
             }

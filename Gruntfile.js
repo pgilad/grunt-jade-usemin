@@ -36,8 +36,7 @@ module.exports = function (grunt) {
             options: {
                 uglify: true,
                 replacePath: {
-                    'v#{config.version}': 'public',
-                    'hoge': 'hgoehgoehoghe'
+                    'v#{config.version}': 'test'
                 }
             },
             test: {

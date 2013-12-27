@@ -1,6 +1,6 @@
 /*
  * grunt-jade-usemin
- * 
+ *
  *
  * Copyright (c) 2013 Gilad Peleg
  * Licensed under the MIT license.
@@ -33,6 +33,12 @@ module.exports = function (grunt) {
 
         // Configuration to be run (and then tested).
         jadeUsemin: {
+            options: {
+                uglify: true,
+                replacePath: {
+                    'v#{config.version}': 'test'
+                }
+            },
             test: {
                 src: 'test/fixtures/**/sample2.jade'
             }
@@ -58,7 +64,7 @@ module.exports = function (grunt) {
 
     // Actually load this plugin's task(s).
     grunt.loadTasks('tasks');
-                     
+
     // Whenever the "test" task is run, first clean the "tmp" dir, then run this
     // plugin's task(s), then test the result.
     grunt.registerTask('test', ['clean', 'jadeUsemin:test', 'nodeunit']);

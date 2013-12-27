@@ -1,10 +1,12 @@
 /*
  * grunt-jade-usemin
- * 
+ *
  *
  * Copyright (c) 2013 Gilad Peleg
  * Licensed under the MIT license.
  */
+
+/* global grunt */
 'use strict';
 
 var _ = require('lodash'),
@@ -17,7 +19,17 @@ module.exports = function (grunt) {
 
         jadeUsemin.options = this.options();
         grunt.verbose.writeflags(jadeUsemin.options, 'Target Options');
-        var tasks = ['concat', 'uglify', 'cssmin'];
+        var tasks = [];
+        if(jadeUsemin.options && jadeUsemin.options.uglify === false) {
+            grunt.log.writeln('execute only concat!');
+            tasks.push('concat');
+            tasks.push('cssmin');
+        } else {
+            grunt.log.writeln('execute concat and uglify');
+            tasks.push('concat');
+            tasks.push('uglify');
+            tasks.push('cssmin');
+        }
 
         //setup
         _.each(tasks, function (task) {
@@ -32,6 +44,7 @@ module.exports = function (grunt) {
             var ext;
             grunt.log.writeln('Processing jade file', file);
             ext = path.extname(file);
+
             if (ext !== '.jade') {
                 grunt.log.warn('Not processing %s because of unsupported extension: %s', file, ext);
             }

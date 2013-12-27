@@ -70,7 +70,13 @@ In your project's Gruntfile, add a section named `jadeUsemin` to the data object
 grunt.initConfig({
   jadeUsemin: {
     main: {
-      options: {},
+      options: {
+        uglify: true //optional - whether to run uglify task as well as concat on js
+        replacePath: {
+            //optional
+            '#{env}': 'dist' //key value to replace in src path
+        }
+      },
       files: {
         src: ['src/index.jade', 'src/index2.jade']
       }
@@ -90,7 +96,9 @@ None yet
 grunt.initConfig({
   jadeUsemin: {
     main: {
-      options: {},
+      options: {
+        uglify:true
+      },
       files: {
         src: ['src/testing', 'src/123'],
       }

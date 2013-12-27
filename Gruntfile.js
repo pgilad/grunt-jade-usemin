@@ -34,12 +34,12 @@ module.exports = function (grunt) {
         // Configuration to be run (and then tested).
         jadeUsemin: {
             options: {
-                uglify: true,
+                uglify     : true,
                 replacePath: {
                     'v#{config.version}': 'test'
                 }
             },
-            test: {
+            test   : {
                 src: 'test/fixtures/**/sample2.jade'
             }
         },

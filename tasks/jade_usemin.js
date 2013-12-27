@@ -17,15 +17,16 @@ module.exports = function (grunt) {
 
     grunt.registerMultiTask('jadeUsemin', 'concat and minify scripts in Jade files with UseMin format', function () {
 
-        jadeUsemin.options = this.options();
+        jadeUsemin.options = this.options({uglify: true});
         grunt.verbose.writeflags(jadeUsemin.options, 'Target Options');
+
         var tasks = [];
-        if(jadeUsemin.options && jadeUsemin.options.uglify === false) {
-            grunt.log.writeln('execute only concat!');
+        if (!jadeUsemin.options.uglify) {
+            grunt.log.writeln('Running only concat & cssmin');
             tasks.push('concat');
             tasks.push('cssmin');
         } else {
-            grunt.log.writeln('execute concat and uglify');
+            grunt.log.writeln('Running concat, cssmin & uglify');
             tasks.push('concat');
             tasks.push('uglify');
             tasks.push('cssmin');
@@ -44,7 +45,6 @@ module.exports = function (grunt) {
             var ext;
             grunt.log.writeln('Processing jade file', file);
             ext = path.extname(file);
-
             if (ext !== '.jade') {
                 grunt.log.warn('Not processing %s because of unsupported extension: %s', file, ext);
             }

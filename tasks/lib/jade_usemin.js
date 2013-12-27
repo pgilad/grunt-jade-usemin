@@ -90,13 +90,14 @@ exports.task = function (grunt) {
      * @returns {number} totalFiles Total files processed as source files
      */
     exports.processTasks = function (parameters) {
-        var extractedTargets = parameters.extractedTargets;
-        var concat = parameters.concat;
-        if(exports.options.uglify) {
-            var uglify = parameters.uglify;
-        }
-        var cssmin = parameters.cssmin;
-        var totalFiles = 0;
+        var extractedTargets, concat, uglify, cssmin, totalFiles;
+
+        extractedTargets = parameters.extractedTargets;
+        concat = parameters.concat;
+        uglify = exports.options.uglify ? parameters.uglify : null;
+
+        cssmin = parameters.cssmin;
+        totalFiles = 0;
 
         _.each(extractedTargets, function (item, target) {
 
@@ -181,7 +182,7 @@ exports.task = function (grunt) {
             else {
 
                 //replace path from options.replacePath
-                _.each(exports.options.replacePath, function(path, key){
+                _.each(exports.options.replacePath, function (path, key) {
                     line = line.replace(key, path);
                 });
 

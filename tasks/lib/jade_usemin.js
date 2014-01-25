@@ -195,6 +195,10 @@ exports.task = function (grunt) {
                         src = src.substr(1);
                     }
 
+                    if (exports.options.prefix) {
+                      src = exports.options.prefix + src;
+                    }
+
                     //if path actually exists
                     if (grunt.file.exists(src)) {
                         exports.insertSrcIntoTargetObj(tempExtraction, target, src);

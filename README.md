@@ -63,6 +63,23 @@ link(rel='stylesheet', href='/test/fixtures/style2.css')
 
 jadeUsemin will create a minified css file called style.min.css which is a concated and minified version of both styles.
 
+### Available Options
+
+##### Uglify
+`{Boolean} [uglify=true]` Whether grunt-contrib-uglify should be run on JS files as well as concat.
+Specifying false will only concat the src js that are found.
+Anything else will default to true, which will also uglify the js files.
+
+##### Prefix
+`{String} [prefix='']` This adds some flexibility to where you keep your public folder. It
+allows you to add a prefix to the path.
+
+##### replacePath
+`{Object}` [default={}] This option allows you to specify an interpolation for the source paths of your js/css.
+Each key value you specify here will be interpolated in the src paths that the plugin finds.
+For example if you add: `'#{env}': 'dist'` then all occurances of `#{env}` in src paths will be replaced with `dist`.
+This gives you the power to change the paths according to different working enviornments.
+
 ### Gruntfile.js basic task
 In your project's Gruntfile, add a section named `jadeUsemin` to the data object passed into `grunt.initConfig()`.
 
@@ -71,11 +88,10 @@ grunt.initConfig({
   jadeUsemin: {
     main: {
       options: {
-        uglify: true, //optional - whether to run uglify task as well as concat on js
-        prefix: '', //optional - add prefix to the path
+        uglify: true, //optional - whether to run uglify js besides concat [default=true]
+        prefix: '', //optional - add prefix to the path [default='']
         replacePath: {
-            //optional
-            '#{env}': 'dist' //key value to replace in src path
+            '#{env}': 'dist' //optional - key value to replace in src path
         }
       },
       files: {

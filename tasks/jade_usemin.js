@@ -6,7 +6,6 @@
  * Licensed under the MIT license.
  */
 
-/* global grunt */
 'use strict';
 
 var _ = require('lodash'),

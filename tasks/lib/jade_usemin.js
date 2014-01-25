@@ -2,7 +2,6 @@
  * Created by Gilad Peleg on 25/11/13.
  */
 
-/* global grunt */
 'use strict';
 
 var path = require('path'),
@@ -174,7 +173,9 @@ exports.task = function (grunt) {
             else if (line.match(exports.regex.endBuildRegex) && type && target) {
                 grunt.verbose.writelns('Found endbuild pattern in line ', lineIndex);
                 extractedTargets[target] = {};
+
                 _.merge(extractedTargets[target], tempExtraction[target]);
+
                 grunt.log.oklns('Finished with target block:', target);
                 type = target = insideBuild = null;
             }
@@ -195,8 +196,9 @@ exports.task = function (grunt) {
                         src = src.substr(1);
                     }
 
+                    //if prefix option exists than concat it
                     if (exports.options.prefix) {
-                      src = exports.options.prefix + src;
+                        src = exports.options.prefix + src;
                     }
 
                     //if path actually exists

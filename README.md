@@ -75,7 +75,7 @@ Anything else will default to true, which will also uglify the js files.
 allows you to add a prefix to the path.
 
 ##### replacePath
-`{Object}` [default={}] This option allows you to specify an interpolation for the source paths of your js/css.
+`{Object} [default={}]` This option allows you to specify an interpolation for the source paths of your js/css.
 Each key value you specify here will be interpolated in the src paths that the plugin finds.
 For example if you add: `'#{env}': 'dist'` then all occurances of `#{env}` in src paths will be replaced with `dist`.
 This gives you the power to change the paths according to different working enviornments.

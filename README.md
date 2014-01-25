@@ -102,9 +102,6 @@ grunt.initConfig({
 })
 ```
 
-### Options
-None yet
-
 ### Usage Examples
 
 #### Default Options

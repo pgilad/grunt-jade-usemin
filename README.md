@@ -71,7 +71,8 @@ grunt.initConfig({
   jadeUsemin: {
     main: {
       options: {
-        uglify: true //optional - whether to run uglify task as well as concat on js
+        uglify: true, //optional - whether to run uglify task as well as concat on js
+        prefix: '', //optional - add prefix to the path
         replacePath: {
             //optional
             '#{env}': 'dist' //key value to replace in src path

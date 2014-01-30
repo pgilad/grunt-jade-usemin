@@ -1,9 +1,10 @@
-# grunt-jade-usemin [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
+# grunt-jade-usemin
 > Grunt plugin for running UseMin on Jade files
 
 [![NPM Version](http://img.shields.io/npm/v/grunt-jade-usemin.svg)](https://npmjs.org/package/grunt-jade-usemin)
 [![NPM](http://img.shields.io/npm/dm/grunt-jade-usemin.svg)](https://npmjs.org/package/grunt-jade-usemin)
 [![Gittip](http://img.shields.io/gittip/pgilad.svg)](https://www.gittip.com/pgilad/)
+[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
 ## Getting Started
 This plugin requires Grunt.

@@ -31,7 +31,6 @@ module.exports = function (grunt) {
             tasks.push('cssmin');
         }
 
-        //setup
         _.each(tasks, function (task) {
             //use original options of uglify & concat
             jadeUsemin[task] = grunt.config(task) || {};

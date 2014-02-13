@@ -1,9 +1,10 @@
-# grunt-jade-usemin
-> Grunt plugin for running UseMin on Jade files
+# [grunt](http://gruntjs.com/)-jade-usemin
+> Grunt plugin for processing jade files and building production js & css files
 
 [![NPM Version](http://img.shields.io/npm/v/grunt-jade-usemin.svg)](https://npmjs.org/package/grunt-jade-usemin)
 [![NPM](http://img.shields.io/npm/dm/grunt-jade-usemin.svg)](https://npmjs.org/package/grunt-jade-usemin)
 [![Gittip](http://img.shields.io/gittip/pgilad.svg)](https://www.gittip.com/pgilad/)
+[![Dependencies](http://img.shields.io/gemnasium/pgilad/grunt-jade-usemin.svg)](https://gemnasium.com/pgilad/grunt-jade-usemin)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
 ## Getting Started
@@ -24,7 +25,7 @@ grunt.loadNpmTasks('grunt-jade-usemin');
 ## The "jadeUsemin" task
 
 This project is based on the [grunt-usemin](https://github.com/yeoman/grunt-usemin) Project.
-grunt-jade-usemin is meant to be an assisting tool in preparing projects for build.
+`grunt-jade-usemin` is meant to be an assisting tool in preparing projects for build.
 The plugin will scan the parsed `.jade` files and extract the scripts from them.
 
 Those scripts are then concated and minified into a single minified file.
@@ -35,10 +36,10 @@ jadeUsemin currently supports 2 types of `sources` to concat & minify: `js` and 
 This is most effectively used in conjunction with the environment variable in express
 i.e `process.env` or `node env`.
 
-jadeUsemin simply scans for the following line: `<!-- build:<type> <target -->`.
+**jadeUsemin** simply scans for the following line: `<!-- build:<type> <target -->`.
 Where `<target>` can be either `js` or `css`.
 
-jadeUsemin then adds the scripts/styles inside the lines until it meets the closing line:
+**jadeUsemin** then adds the scripts/styles inside the lines until it meets the closing line:
 `<!-- endbuild -->` Which signifies the end of a usemin target.
 
 ##### for the following to work, you need to expose your `env` variable when rendering the jade file.
@@ -54,10 +55,10 @@ else
     script(src='/test/compiled/compiled.min.js')
 ```
 
-Running `jadeUsemin` on this file will concat & uglify the script files `script1.js` and `script2.js`
+Running `**jadeUsemin**` on this file will concat & uglify the script files `script1.js` and `script2.js`
 into a minified file `compiled.min.js`.
 
-Another example is using jadeUsemin with css files:
+Another example is using **jadeUsemin** with css files:
 ```jade
 //-<!-- build:css test/compiled/style.min.css -->
 link(rel='stylesheet', href='/test/fixtures/style1.css')
@@ -127,8 +128,6 @@ grunt.initConfig({
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
-
-## Release History
 
 ## License
 Copyright (c) 2014 Gilad Peleg. Licensed under the MIT license.

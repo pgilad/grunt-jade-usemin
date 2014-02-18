@@ -13,8 +13,8 @@ module.exports = function (grunt) {
 
     // Project configuration.
     grunt.initConfig({
-        jshint    : {
-            all    : [
+        jshint: {
+            all: [
                 'Gruntfile.js',
                 'tasks/**/*.js',
                 '<%= nodeunit.tests %>'
@@ -26,19 +26,19 @@ module.exports = function (grunt) {
         },
 
         // Before generating any new files, remove any previously-created files.
-        clean     : {
+        clean: {
             tests: ['tmp', 'test/compiled']
         },
 
         // Configuration to be run (and then tested).
         jadeUsemin: {
             options: {
-                uglify     : true,
+                uglify: true,
                 replacePath: {
                     'v#{config.version}': 'test'
                 }
             },
-            test   : {
+            test: {
                 src: 'test/fixtures/**/sample2.jade'
             }
         },
@@ -49,13 +49,18 @@ module.exports = function (grunt) {
                     //should task report already updated dependencies
                     reportUpdated: false,
                     //can be 'force'|'report'|'prompt'
-                    updateType   : 'prompt'
+                    updateType: 'prompt',
+                    packages: {
+                        //only devDependencies by default
+                        devDependencies: true,
+                        dependencies: true
+                    }
                 }
             }
         },
 
         // Unit tests.
-        nodeunit : {
+        nodeunit: {
             tests: ['test/*_test.js']
         }
 

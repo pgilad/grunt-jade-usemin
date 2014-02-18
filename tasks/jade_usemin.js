@@ -16,7 +16,9 @@ module.exports = function (grunt) {
 
     grunt.registerMultiTask('jadeUsemin', 'concat and minify scripts in Jade files with UseMin format', function () {
 
-        jadeUsemin.options = this.options({uglify: true});
+        jadeUsemin.options = this.options({
+            uglify: true
+        });
         grunt.verbose.writeflags(jadeUsemin.options, 'Target Options');
 
         var tasks = [];
@@ -45,8 +47,7 @@ module.exports = function (grunt) {
             ext = path.extname(file);
             if (ext !== '.jade') {
                 grunt.log.warn('Not processing %s because of unsupported extension: %s', file, ext);
-            }
-            else {
+            } else {
                 jadeUsemin.extractTargetsFromJade(file, jadeUsemin.extractedTargets);
             }
         });

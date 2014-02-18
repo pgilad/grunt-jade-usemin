@@ -1,7 +1,6 @@
 /**
  * Created by Gilad Peleg on 25/11/13.
  */
-
 'use strict';
 
 var path = require('path'),
@@ -17,42 +16,42 @@ exports.task = function (grunt) {
 
     // set up relevant regex for jade find
     exports.regex = {
-        buildRegex       : /<!-- build/,
+        buildRegex: /<!-- build/,
         buildExtractRegex: /build:(\w+)\s+((\w*[\/._-]*)+)/,
-        endBuildRegex    : /<!-- endbuild/,
-        jsSourceRegex    : /src=['"]((\w*[\/._-]*)+)['"]/,
-        cssSourceRegex   : /href=['"]((\w*[\/._-]*)+)['"]/
+        endBuildRegex: /<!-- endbuild/,
+        jsSourceRegex: /src=['"]((\w*[\/._-]*)+)['"]/,
+        cssSourceRegex: /href=['"]((\w*[\/._-]*)+)['"]/
     };
 
     //set up default tasks options
     exports.defaultTasks = {
         concat: {
             options: {
-                banner   : '',
-                footer   : '',
+                banner: '',
+                footer: '',
                 separator: '\n',
-                process  : function (src, filepath) {
+                process: function (src, filepath) {
                     return '\n/*! START:' + filepath + '**/\n' +
                         src + '\n/*! END:' + filepath + '**/';
                 }
             },
-            files  : []
+            files: []
         },
 
         uglify: {
             options: {
-                report          : 'min',
+                report: 'min',
                 preserveComments: 'some',
-                compress        : false
+                compress: false
             },
-            files  : []
+            files: []
         },
 
         cssmin: {
             options: {
                 report: 'min'
             },
-            files  : []
+            files: []
         }
     };
 
@@ -64,7 +63,7 @@ exports.task = function (grunt) {
      */
     exports.addConcatFileTarget = function (concat, src, dest) {
         concat.files.push({
-            src : src,
+            src: src,
             dest: dest
         });
     };
@@ -106,8 +105,7 @@ exports.task = function (grunt) {
 
             if (item.type === 'js' && uglify) {
                 exports.addUglifyTarget(uglify, target);
-            }
-            else if (item.type === 'css') {
+            } else if (item.type === 'css') {
                 exports.addUglifyTarget(cssmin, target);
             }
         });
@@ -118,8 +116,7 @@ exports.task = function (grunt) {
     exports.getSrcRegex = function (type) {
         if (type === 'js') {
             return exports.regex.jsSourceRegex;
-        }
-        else if (type === 'css') {
+        } else if (type === 'css') {
             return exports.regex.cssSourceRegex;
         }
         return null;
@@ -133,7 +130,10 @@ exports.task = function (grunt) {
     exports.extractTargetsFromJade = function (location, extractedTargets) {
         //current temp file
         var srcRegex, insideBuild = false;
-        var target = null, extracted = [], type = null, tempExtraction = {};
+        var target = null,
+            extracted = [],
+            type = null,
+            tempExtraction = {};
 
         var file = grunt.file.read(location).split('\n');
 
@@ -158,8 +158,7 @@ exports.task = function (grunt) {
                     if (!_.contains(['css', 'js'], type)) {
                         grunt.log.error('Unsupported build type: ' + type + ' in line number:' + lineIndex);
                         return;
-                    }
-                    else if (!target) {
+                    } else if (!target) {
                         grunt.log.warn('Target not found in line:' + line);
                         return;
                     }
@@ -169,7 +168,7 @@ exports.task = function (grunt) {
                     //default empty target
                     tempExtraction[target] = {
                         type: type,
-                        src : []
+                        src: []
                     };
 
                     insideBuild = true;
@@ -210,8 +209,7 @@ exports.task = function (grunt) {
                     //if path actually exists
                     if (grunt.file.exists(src)) {
                         exports.insertSrcIntoTargetObj(tempExtraction, target, src);
-                    }
-                    else {
+                    } else {
                         //attempt to resolve path relative to location (where jade file is)
                         var locationPath = path.dirname(location);
                         var newSrcPath = path.resolve(locationPath, src);

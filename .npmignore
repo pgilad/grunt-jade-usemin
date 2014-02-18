@@ -2,7 +2,6 @@
 .DS_Store
 .editorconfig
 .git*
-.gitattributes
 .idea
 .jshintrc
 .npmignore

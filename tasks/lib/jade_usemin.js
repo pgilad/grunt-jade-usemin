@@ -18,7 +18,7 @@ exports.task = function (grunt) {
     // set up relevant regex for jade find
     exports.regex = {
         buildRegex       : /<!-- build/,
-        buildExtractRegex: /build:(\w+)\s+((\w*[\/._]*)+)/,
+        buildExtractRegex: /build:(\w+)\s+((\w*[\/._-]*)+)/,
         endBuildRegex    : /<!-- endbuild/,
         jsSourceRegex    : /src=['"]((\w*[\/._-]*)+)['"]/,
         cssSourceRegex   : /href=['"]((\w*[\/._-]*)+)['"]/
@@ -144,6 +144,12 @@ exports.task = function (grunt) {
 
                 //look for pattern build:<type>
                 if (line.match(exports.regex.buildRegex)) {
+
+                    //replace path from options.replacePath
+                    _.each(exports.options.replacePath, function (path, key) {
+                        line = line.replace(key, path);
+                    });
+
                     extracted = line.match(exports.regex.buildExtractRegex);
                     type = extracted[1];
                     target = extracted[2];

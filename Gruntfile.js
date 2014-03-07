@@ -50,6 +50,7 @@ module.exports = function (grunt) {
                     reportUpdated: false,
                     //can be 'force'|'report'|'prompt'
                     updateType: 'prompt',
+                    semver: false,
                     packages: {
                         //only devDependencies by default
                         devDependencies: true,

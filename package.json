@@ -1,52 +1,49 @@
 {
-  "name": "grunt-jade-usemin",
-  "version": "0.2.12",
-  "description": "Grunt plugin for running UseMin on Jade files",
-  "homepage": "https://github.com/pgilad/grunt-jade-usemin",
-  "bugs": "https://github.com/pgilad/grunt-jade-usemin/issues",
-  "author": {
-    "name": "Gilad Peleg",
-    "email": "giladp007@gmail.com"
-  },
-  "keywords": [
-    "gruntplugin",
-    "jade",
-    "usemin",
-    "build",
-    "minify"
-  ],
-  "main": "Gruntfile.js",
-  "engines": {
-    "node": ">= 0.8.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pgilad/grunt-jade-usemin.git"
-  },
-  "licenses": [
-    {
-      "type": "MIT"
+    "name": "grunt-jade-usemin",
+    "version": "0.2.12",
+    "description": "Grunt plugin for running UseMin on Jade files",
+    "homepage": "https://github.com/pgilad/grunt-jade-usemin",
+    "bugs": "https://github.com/pgilad/grunt-jade-usemin/issues",
+    "author": {
+        "name": "Gilad Peleg",
+        "email": "giladp007@gmail.com"
+    },
+    "keywords": [
+        "gruntplugin",
+        "jade",
+        "usemin",
+        "build",
+        "minify"
+    ],
+    "main": "Gruntfile.js",
+    "engines": {
+        "node": ">= 0.8.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pgilad/grunt-jade-usemin.git"
+    },
+    "licenses": [{
+        "type": "MIT"
+    }],
+    "devDependencies": {
+        "grunt-contrib-jshint": "~0.8.0",
+        "grunt-contrib-nodeunit": "~0.3.2",
+        "grunt-contrib-clean": "~0.5.0",
+        "load-grunt-tasks": "^0.4.0",
+        "jshint-stylish": "~0.1.5",
+        "grunt-dev-update": "~0.4.6"
+    },
+    "peerDependencies": {
+        "grunt": "~0.4.1"
+    },
+    "scripts": {
+        "test": "grunt test"
+    },
+    "dependencies": {
+        "lodash": "~2.4.1",
+        "grunt-contrib-concat": "^0.3.0",
+        "grunt-contrib-uglify": "^0.4.0",
+        "grunt-contrib-cssmin": "^0.9.0"
     }
-  ],
-  "devDependencies": {
-    "grunt-contrib-jshint": "~0.8.0",
-    "grunt-contrib-nodeunit": "~0.3.2",
-    "grunt-contrib-clean": "~0.5.0",
-    "load-grunt-tasks": "~0.3.0",
-    "jshint-stylish": "~0.1.5",
-    "grunt-dev-update": "~0.4.6",
-    "grunt-contrib-uglify": "~0.3.2"
-  },
-  "peerDependencies": {
-    "grunt": "~0.4.1"
-  },
-  "scripts": {
-    "test": "grunt test"
-  },
-  "dependencies": {
-    "lodash": "~2.4.1",
-    "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-uglify": "~0.2.7",
-    "grunt-contrib-cssmin": "~0.8.0"
-  }
 }

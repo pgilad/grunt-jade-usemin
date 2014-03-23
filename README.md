@@ -2,7 +2,7 @@
 > Grunt plugin for processing jade files and building production js & css files
 
 [![NPM Version](http://img.shields.io/npm/v/grunt-jade-usemin.svg)](https://npmjs.org/package/grunt-jade-usemin)
-[![NPM Version](http://img.shields.io/npm/dm/grunt-jade-usemin.svg)](https://npmjs.org/package/grunt-jade-usemin)
+[![NPM Downloads](http://img.shields.io/npm/dm/grunt-jade-usemin.svg)](https://npmjs.org/package/grunt-jade-usemin)
 [![Dependencies](http://img.shields.io/gemnasium/pgilad/grunt-jade-usemin.svg)](https://gemnasium.com/pgilad/grunt-jade-usemin)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 

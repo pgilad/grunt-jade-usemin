@@ -4,7 +4,7 @@
 [![NPM Version](http://img.shields.io/npm/v/grunt-jade-usemin.svg?style=flat)](https://npmjs.org/package/grunt-jade-usemin)
 [![NPM Downloads](http://img.shields.io/npm/dm/grunt-jade-usemin.svg?style=flat)](https://npmjs.org/package/grunt-jade-usemin)
 [![Dependencies](http://img.shields.io/gemnasium/pgilad/grunt-jade-usemin.svg?style=flat)](https://gemnasium.com/pgilad/grunt-jade-usemin)
-[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
+[![Built with Grunt](http://img.shields.io/badge/BUILT_WITH-GRUNT-orange.svg?style=flat)](http://gruntjs.com/)
 
 ## Getting Started
 This plugin requires Grunt.

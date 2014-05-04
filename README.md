@@ -54,7 +54,7 @@ else
     script(src='/test/compiled/compiled.min.js')
 ```
 
-Running `**jadeUsemin**` on this file will concat & uglify the script files `script1.js` and `script2.js`
+Running **jadeUsemin** on this file will concat & uglify the script files `script1.js` and `script2.js`
 into a minified file `compiled.min.js`.
 
 Another example is using **jadeUsemin** with css files:

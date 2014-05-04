@@ -2,34 +2,33 @@
 
 var grunt = require('grunt');
 
-/*
- ======== A Handy Little Nodeunit Reference ========
- https://github.com/caolan/nodeunit
-
- Test methods:
- test.expect(numAssertions)
- test.done()
- Test assertions:
- test.ok(value, [message])
- test.equal(actual, expected, [message])
- test.notEqual(actual, expected, [message])
- test.deepEqual(actual, expected, [message])
- test.notDeepEqual(actual, expected, [message])
- test.strictEqual(actual, expected, [message])
- test.notStrictEqual(actual, expected, [message])
- test.throws(block, [error], [message])
- test.doesNotThrow(block, [error], [message])
- test.ifError(value)
- */
+var fileCmp = function(test, fileName) {
+    var actual = grunt.file.read('./test/compiled/' + fileName);
+    var expected = grunt.file.read('./test/expected/' + fileName);
+    test.equal(actual.trim(), expected.trim(), 'files should be equal');
+};
 
 exports.jadeUsemin = {
-    setUp         : function (done) {
+    setUp: function(done) {
         // setup here if necessary
         done();
     },
-    defaultOptions: function (test) {
+    test1: function(test) {
+        test.expect(1);
 
-        test.ok(true);
+        var basic = 'basic.min.js';
+        fileCmp(test, basic);
+
+        test.done();
+    },
+    test2: function(test) {
+        test.expect(2);
+
+        var multipleJs = 'multiple.min.js';
+        fileCmp(test, multipleJs);
+
+        var multipleCss = 'multiple.min.css';
+        fileCmp(test, multipleCss);
 
         test.done();
     }

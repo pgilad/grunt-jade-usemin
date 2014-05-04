@@ -13,17 +13,6 @@ module.exports = function (grunt) {
 
     // Project configuration.
     grunt.initConfig({
-        jshint: {
-            all: [
-                'Gruntfile.js',
-                'tasks/**/*.js',
-                '<%= nodeunit.tests %>'
-            ],
-            options: {
-                jshintrc: '.jshintrc',
-                reporter: require('jshint-stylish')
-            }
-        },
 
         // Before generating any new files, remove any previously-created files.
         clean: {
@@ -35,11 +24,11 @@ module.exports = function (grunt) {
             options: {
                 uglify: true,
                 replacePath: {
-                    'v#{config.version}': 'test'
+                    '#{env}': 'dist' //optional - key value to replace in src path
                 }
             },
             test: {
-                src: 'test/fixtures/**/sample2.jade'
+                src: 'test/fixtures/*.jade'
             }
         },
 

@@ -1,4 +1,4 @@
-var testFunction = function() {
+var testFunction = function () {
     console.log('this is a test function');
 };
 

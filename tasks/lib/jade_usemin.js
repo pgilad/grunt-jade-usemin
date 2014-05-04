@@ -3,8 +3,26 @@
  */
 'use strict';
 
-var path = require('path'),
-    _ = require('lodash');
+var path = require('path');
+var _ = require('lodash');
+
+// set up relevant regex for jade find
+var regex = {
+    buildRegex: /<!-- build/,
+    buildExtractRegex: /build:(\w+)\s+((\w*[\/._-]*)+)/,
+    endBuildRegex: /<!-- endbuild/,
+    jsSourceRegex: /src=['"]((\w*[\/._-]*)+)['"]/,
+    cssSourceRegex: /href=['"]((\w*[\/._-]*)+)['"]/
+};
+
+var getSrcRegex = function (type) {
+    if (type === 'js') {
+        return regex.jsSourceRegex;
+    } else if (type === 'css') {
+        return regex.cssSourceRegex;
+    }
+    return null;
+};
 
 exports.task = function (grunt) {
     var exports = {
@@ -13,47 +31,6 @@ exports.task = function (grunt) {
 
     //contains all of our targets
     exports.extractedTargets = {};
-
-    // set up relevant regex for jade find
-    exports.regex = {
-        buildRegex: /<!-- build/,
-        buildExtractRegex: /build:(\w+)\s+((\w*[\/._-]*)+)/,
-        endBuildRegex: /<!-- endbuild/,
-        jsSourceRegex: /src=['"]((\w*[\/._-]*)+)['"]/,
-        cssSourceRegex: /href=['"]((\w*[\/._-]*)+)['"]/
-    };
-
-    //set up default tasks options
-    exports.defaultTasks = {
-        concat: {
-            options: {
-                banner: '',
-                footer: '',
-                separator: '\n',
-                process: function (src, filepath) {
-                    return '\n/*! START:' + filepath + '**/\n' +
-                        src + '\n/*! END:' + filepath + '**/';
-                }
-            },
-            files: []
-        },
-
-        uglify: {
-            options: {
-                report: 'min',
-                preserveComments: 'some',
-                compress: false
-            },
-            files: []
-        },
-
-        cssmin: {
-            options: {
-                report: 'min'
-            },
-            files: []
-        }
-    };
 
     /**
      * Add Concat file target
@@ -68,15 +45,10 @@ exports.task = function (grunt) {
         });
     };
 
-    /**
-     * Adds uglify target
-     * @param uglify
-     * @param target
-     */
-    exports.addUglifyTarget = function (uglify, target) {
-        var uglifyTarget = {};
-        uglifyTarget[target] = target;
-        uglify.files.push(uglifyTarget);
+    exports.addTaskTarget = function (task, target) {
+        var targetObj = {};
+        targetObj[target] = target;
+        task.files.push(targetObj);
     };
 
     /**
@@ -98,28 +70,18 @@ exports.task = function (grunt) {
         totalFiles = 0;
 
         _.each(extractedTargets, function (item, target) {
-
             exports.addConcatFileTarget(concat, item.src, target);
             grunt.log.oklns('Target ' + target + ' contains ' + item.src.length + ' files.');
             totalFiles += item.src.length;
 
             if (item.type === 'js' && uglify) {
-                exports.addUglifyTarget(uglify, target);
+                exports.addTaskTarget(uglify, target);
             } else if (item.type === 'css') {
-                exports.addUglifyTarget(cssmin, target);
+                exports.addTaskTarget(cssmin, target);
             }
         });
 
         return totalFiles;
-    };
-
-    exports.getSrcRegex = function (type) {
-        if (type === 'js') {
-            return exports.regex.jsSourceRegex;
-        } else if (type === 'css') {
-            return exports.regex.cssSourceRegex;
-        }
-        return null;
     };
 
     exports.insertSrcIntoTargetObj = function (tempExtraction, target, src) {
@@ -129,33 +91,31 @@ exports.task = function (grunt) {
 
     exports.extractTargetsFromJade = function (location, extractedTargets) {
         //current temp file
-        var srcRegex, insideBuild = false;
-        var target = null,
-            extracted = [],
-            type = null,
-            tempExtraction = {};
-
+        var srcRegex;
+        var insideBuild = false;
+        var target = null;
+        var extracted = [];
+        var type = null;
+        var tempExtraction = {};
+        var prefix = exports.options.prefix;
         var file = grunt.file.read(location).split('\n');
 
         _.each(file, function (line, lineIndex) {
-
             //if still scanning for build:<type>
             if (!insideBuild) {
-
                 //look for pattern build:<type>
-                if (line.match(exports.regex.buildRegex)) {
-
+                if (line.match(regex.buildRegex)) {
                     //replace path from options.replacePath
                     _.each(exports.options.replacePath, function (path, key) {
                         line = line.replace(key, path);
                     });
 
-                    extracted = line.match(exports.regex.buildExtractRegex);
+                    extracted = line.match(regex.buildExtractRegex);
                     type = extracted[1];
                     target = extracted[2];
 
                     //if unrecognized build type
-                    if (!_.contains(['css', 'js'], type)) {
+                    if (type !== 'css' && type !== 'js') {
                         grunt.log.error('Unsupported build type: ' + type + ' in line number:' + lineIndex);
                         return;
                     } else if (!target) {
@@ -164,7 +124,6 @@ exports.task = function (grunt) {
                     }
 
                     grunt.verbose.writelns('Found build:<type> pattern in line:', lineIndex);
-
                     //default empty target
                     tempExtraction[target] = {
                         type: type,
@@ -175,7 +134,7 @@ exports.task = function (grunt) {
                 }
             }
             //got to end of build: <!-- endbuild -->
-            else if (line.match(exports.regex.endBuildRegex) && type && target) {
+            else if (line.match(regex.endBuildRegex) && type && target) {
                 grunt.verbose.writelns('Found endbuild pattern in line ', lineIndex);
                 extractedTargets[target] = {};
 
@@ -186,15 +145,13 @@ exports.task = function (grunt) {
             }
             //we are inside a build:<type> block
             else {
-
                 //replace path from options.replacePath
                 _.each(exports.options.replacePath, function (path, key) {
                     line = line.replace(key, path);
                 });
 
-                srcRegex = exports.getSrcRegex(type);
+                srcRegex = getSrcRegex(type);
                 var src = line.match(srcRegex);
-
                 if (src && src[1]) {
                     src = src[1];
                     if (src.charAt(0) === '/') {
@@ -202,8 +159,8 @@ exports.task = function (grunt) {
                     }
 
                     //if prefix option exists than concat it
-                    if (exports.options.prefix) {
-                        src = exports.options.prefix + src;
+                    if (prefix) {
+                        src = prefix + src;
                     }
 
                     //if path actually exists

@@ -2,14 +2,40 @@
  * grunt-jade-usemin
  *
  *
- * Copyright (c) 2013 Gilad Peleg
+ * Copyright (c) 2014 Gilad Peleg
  * Licensed under the MIT license.
  */
 
 'use strict';
 
-var _ = require('lodash'),
-    path = require('path');
+var _ = require('lodash');
+var path = require('path');
+
+//set up default tasks options
+var defaultTasks = {
+    concat: {
+        options: {
+            banner: '',
+            footer: '',
+            separator: '\n'
+        },
+        files: []
+    },
+    uglify: {
+        options: {
+            report: 'min',
+            preserveComments: 'some',
+            compress: false
+        },
+        files: []
+    },
+    cssmin: {
+        options: {
+            report: 'min'
+        },
+        files: []
+    }
+};
 
 module.exports = function (grunt) {
     var jadeUsemin = require('./lib/jade_usemin').task(grunt);
@@ -37,19 +63,18 @@ module.exports = function (grunt) {
             //use original options of uglify & concat
             jadeUsemin[task] = grunt.config(task) || {};
             //get default options for the task
-            jadeUsemin[task].jadeUsemin = _.defaults({}, jadeUsemin.defaultTasks[task]);
+            jadeUsemin[task].jadeUsemin = defaultTasks[task];
         });
 
         //go through each expanded file src to create extracted files
         _.each(this.filesSrc, function (file) {
-            var ext;
             grunt.log.writeln('Processing jade file', file);
-            ext = path.extname(file);
-            if (ext !== '.jade') {
-                grunt.log.warn('Not processing %s because of unsupported extension: %s', file, ext);
-            } else {
-                jadeUsemin.extractTargetsFromJade(file, jadeUsemin.extractedTargets);
+            if (path.extname(file) !== '.jade') {
+                grunt.log.warn('Not processing %s because of unsupported extension: %s', file);
+                return;
             }
+
+            jadeUsemin.extractTargetsFromJade(file, jadeUsemin.extractedTargets);
         });
 
         var processOptions = {

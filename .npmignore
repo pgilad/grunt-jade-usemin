@@ -3,6 +3,7 @@
 .git*
 .idea/
 .jshintrc
+.npmignore
 .travis.yml
 Gruntfile.js
 node_modules/

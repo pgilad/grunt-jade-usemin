@@ -24,7 +24,7 @@ module.exports = function (grunt) {
             options: {
                 uglify: true,
                 replacePath: {
-                    '#{env}': 'dist' //optional - key value to replace in src path
+                    '#{baseDir}': 'test' //optional - key value to replace in src path
                 }
             },
             test: {

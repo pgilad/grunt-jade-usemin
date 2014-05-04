@@ -1,12 +1,11 @@
-*.md
 .DS_Store
 .editorconfig
 .git*
-.idea
+.idea/
 .jshintrc
-.npmignore
+.travis.yml
 Gruntfile.js
-node_modules
+node_modules/
 npm-debug.log
 test/
-tmp
+tmp/

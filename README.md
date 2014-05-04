@@ -4,6 +4,7 @@
 [![NPM Version](http://img.shields.io/npm/v/grunt-jade-usemin.svg?style=flat)](https://npmjs.org/package/grunt-jade-usemin)
 [![NPM Downloads](http://img.shields.io/npm/dm/grunt-jade-usemin.svg?style=flat)](https://npmjs.org/package/grunt-jade-usemin)
 [![Dependencies](http://img.shields.io/gemnasium/pgilad/grunt-jade-usemin.svg?style=flat)](https://gemnasium.com/pgilad/grunt-jade-usemin)
+[![Build Status](http://img.shields.io/travis/pgilad/grunt-jade-usemin/master.svg?style=flat)](https://travis-ci.org/pgilad/grunt-jade-usemin)
 [![Built with Grunt](http://img.shields.io/badge/BUILT_WITH-GRUNT-orange.svg?style=flat)](http://gruntjs.com/)
 
 ## Getting Started

@@ -29,23 +29,20 @@ exports.task = function (grunt) {
         options: {}
     };
 
-    //contains all of our targets
-    exports.extractedTargets = {};
-
     /**
      * Add Concat file target
      * @param {Object} concat
      * @param src
      * @param dest
      */
-    exports.addConcatFileTarget = function (concat, src, dest) {
+    exports.addToConcatTask = function (concat, src, dest) {
         concat.files.push({
             src: src,
             dest: dest
         });
     };
 
-    exports.addTaskTarget = function (task, target) {
+    exports.addTargetToTask = function (task, target) {
         var targetObj = {};
         targetObj[target] = target;
         task.files.push(targetObj);
@@ -53,38 +50,37 @@ exports.task = function (grunt) {
 
     /**
      * Process the extracted targets
-     * @param parameters
+     * @param params
      * @param {Object} parameters.extractedTargets
      * @param parameters.concat
      * @param parameters.uglify
      * @returns {number} totalFiles Total files processed as source files
      */
-    exports.processTasks = function (parameters) {
-        var extractedTargets, concat, uglify, cssmin, totalFiles;
-
-        extractedTargets = parameters.extractedTargets;
-        concat = parameters.concat;
-        uglify = exports.options.uglify ? parameters.uglify : null;
-
-        cssmin = parameters.cssmin;
-        totalFiles = 0;
+    exports.processTasks = function (params) {
+        var extractedTargets = params.extractedTargets;
+        var concat = params.concat;
+        var uglify = exports.options.uglify ? params.uglify : null;
+        var cssmin = params.cssmin;
+        var totalFiles = 0;
 
         _.each(extractedTargets, function (item, target) {
-            exports.addConcatFileTarget(concat, item.src, target);
+            exports.addToConcatTask(concat, item.src, target);
             grunt.log.oklns('Target ' + target + ' contains ' + item.src.length + ' files.');
             totalFiles += item.src.length;
 
             if (item.type === 'js' && uglify) {
-                exports.addTaskTarget(uglify, target);
+                exports.addTargetToTask(uglify, target);
             } else if (item.type === 'css') {
-                exports.addTaskTarget(cssmin, target);
+                exports.addTargetToTask(cssmin, target);
+            } else {
+                return null;
             }
         });
 
         return totalFiles;
     };
 
-    exports.insertSrcIntoTargetObj = function (tempExtraction, target, src) {
+    exports.addSrcToTarget = function (tempExtraction, target, src) {
         grunt.verbose.writelns('Adding src file ' + src);
         tempExtraction[target].src.push(src);
     };
@@ -98,6 +94,7 @@ exports.task = function (grunt) {
         var type = null;
         var tempExtraction = {};
         var prefix = exports.options.prefix;
+        //split file by line-breaks
         var file = grunt.file.read(location).split('\n');
 
         _.each(file, function (line, lineIndex) {
@@ -116,11 +113,9 @@ exports.task = function (grunt) {
 
                     //if unrecognized build type
                     if (type !== 'css' && type !== 'js') {
-                        grunt.log.error('Unsupported build type: ' + type + ' in line number:' + lineIndex);
-                        return;
+                        return grunt.log.error('Unsupported build type: ' + type + ' in line number:' + lineIndex);
                     } else if (!target) {
-                        grunt.log.warn('Target not found in line:' + line);
-                        return;
+                        return grunt.log.warn('Target not found in line:' + line);
                     }
 
                     grunt.verbose.writelns('Found build:<type> pattern in line:', lineIndex);
@@ -165,14 +160,14 @@ exports.task = function (grunt) {
 
                     //if path actually exists
                     if (grunt.file.exists(src)) {
-                        exports.insertSrcIntoTargetObj(tempExtraction, target, src);
+                        exports.addSrcToTarget(tempExtraction, target, src);
                     } else {
                         //attempt to resolve path relative to location (where jade file is)
                         var locationPath = path.dirname(location);
                         var newSrcPath = path.resolve(locationPath, src);
                         grunt.verbose.writelns('Src file ' + src + " wasn't found. Looking for it relative to jade file");
                         if (grunt.file.exists(newSrcPath)) {
-                            exports.insertSrcIntoTargetObj(tempExtraction, target, newSrcPath);
+                            exports.addSrcToTarget(tempExtraction, target, newSrcPath);
                         }
                         //src file wasn't found
                         else {
@@ -184,7 +179,7 @@ exports.task = function (grunt) {
         });
 
         if (insideBuild) {
-            grunt.fatal("Couldn't find `endbuild` in file: " + location + ", target: " + target);
+            grunt.fatal("Couldn't find 'endbuild' in file: " + location + ", target: " + target);
         }
     };
 

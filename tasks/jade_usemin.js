@@ -9,6 +9,7 @@
 'use strict';
 
 var _ = require('lodash');
+var os = require('os');
 var path = require('path');
 
 //set up default tasks options
@@ -17,7 +18,7 @@ var defaultTasks = {
         options: {
             banner: '',
             footer: '',
-            separator: '\n'
+            separator: os.EOL
         },
         files: []
     },
@@ -41,61 +42,57 @@ module.exports = function (grunt) {
     var jadeUsemin = require('./lib/jade_usemin').task(grunt);
 
     grunt.registerMultiTask('jadeUsemin', 'concat and minify scripts in Jade files with UseMin format', function () {
+        var tasks = [];
+        var tasksToRun = [];
+        var extractedTargets = {};
 
+        //set task options
         jadeUsemin.options = this.options({
             uglify: true
         });
         grunt.verbose.writeflags(jadeUsemin.options, 'Target Options');
 
-        var tasks = [];
-        if (!jadeUsemin.options.uglify) {
-            grunt.log.writeln('Running only concat & cssmin');
-            tasks.push('concat');
-            tasks.push('cssmin');
-        } else {
-            grunt.log.writeln('Running concat, cssmin & uglify');
-            tasks.push('concat');
-            tasks.push('uglify');
-            tasks.push('cssmin');
-        }
-
-        _.each(tasks, function (task) {
-            //use original options of uglify & concat
-            jadeUsemin[task] = grunt.config(task) || {};
-            //get default options for the task
-            jadeUsemin[task].jadeUsemin = defaultTasks[task];
-        });
-
-        //go through each expanded file src to create extracted files
-        _.each(this.filesSrc, function (file) {
-            grunt.log.writeln('Processing jade file', file);
-            if (path.extname(file) !== '.jade') {
-                grunt.log.warn('Not processing %s because of unsupported extension: %s', file);
-                return;
-            }
-
-            jadeUsemin.extractTargetsFromJade(file, jadeUsemin.extractedTargets);
+        //iterate through each files
+        _.each(this.files, function (file) {
+            //handle file src
+            _.each(file.src, function (src) {
+                grunt.log.writeln('Processing jade file', src);
+                //skip non-jade files (could be re-written)
+                if (path.extname(src) !== '.jade') {
+                    return grunt.log.warn('Not processing %s because of unsupported extension: %s', src);
+                }
+                jadeUsemin.extractTargetsFromJade(src, extractedTargets);
+            });
+            //TODO - handle file targets (file.dest)
+            //Need to re-create jade file with build blocks replaced
         });
 
         var processOptions = {
-            extractedTargets: jadeUsemin.extractedTargets
+            extractedTargets: extractedTargets
         };
 
+        tasks.push('concat');
+        if (jadeUsemin.options.uglify) {
+            tasks.push('uglify');
+        }
+        tasks.push('cssmin');
+
         _.each(tasks, function (task) {
+            //setup task global options
+            jadeUsemin[task] = grunt.config(task) || {};
+            //setup task target
+            jadeUsemin[task].jadeUsemin = defaultTasks[task];
             processOptions[task] = jadeUsemin[task].jadeUsemin;
         });
 
         //process uglify and concat tasks
         jadeUsemin.totalFiles = jadeUsemin.processTasks(processOptions);
 
-        //set temporary configs and choose whether to run scripts
-        var tasksToRun = ['jadeUseminComplete'];
-
         //only run if there are src file located
         if (jadeUsemin.totalFiles > 0) {
             _.each(tasks, function (task) {
-                //if task
                 if (jadeUsemin[task].jadeUsemin.files.length) {
+                    //configure task for grunt
                     grunt.config(task, jadeUsemin[task]);
                     //we will add this at the end
                     if (task !== 'concat') {
@@ -107,6 +104,8 @@ module.exports = function (grunt) {
             //make sure concat:jadeUsemin goes in first
             tasksToRun.unshift('concat:jadeUsemin');
         }
+
+        tasksToRun.push('jadeUseminComplete');
 
         //assign a finalize task to notify user that task finished, and how many files processed
         grunt.registerTask('jadeUseminComplete', function () {

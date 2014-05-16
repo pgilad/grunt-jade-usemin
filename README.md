@@ -26,21 +26,24 @@ grunt.loadNpmTasks('grunt-jade-usemin');
 
 This project is based on the [grunt-usemin](https://github.com/yeoman/grunt-usemin) Project.
 `grunt-jade-usemin` is meant to be an assisting tool in preparing projects for build.
-The plugin will scan the parsed `.jade` files and extract the scripts from them.
 
-Those scripts are then concated and minified into a single minified file.
-jadeUsemin currently supports 2 types of `sources` to concat & minify: `js` and `css`.
+The steps of this plugin are as follows:
+1. Scan **src** jade files.
+2. Locate **build blocks** defined by `<!-- build:type target -->`.
+3. Gather **css** and **js** files in build blocks and run them through concat, cssmin & uglify.
+4. (**new in version 0.4.0**) Optionally output an optimized jade with with only targets to replace the build block.
+
+Currently only 2 types of build blocks are supported: `css` and `js`.
 
 ### How to use in a Jade file
 
 This is most effectively used in conjunction with the environment variable in express
 i.e `process.env` or `node env`.
 
-**jadeUsemin** simply scans for the following line: `<!-- build:<type> <target -->`.
-Where `<target>` can be either `js` or `css`.
+**jadeUsemin** scans for the following line: `<!-- build:<type> <target> -->`.
 
 **jadeUsemin** then adds the scripts/styles inside the lines until it meets the closing line:
-`<!-- endbuild -->` Which signifies the end of a usemin target.
+`<!-- endbuild -->` Which signifies the end of a usemin build block.
 
 ##### for the following to work, you need to expose your `env` variable when rendering the jade file.
 This is an example `index.jade`:
@@ -68,6 +71,30 @@ link(rel='stylesheet', href='/test/fixtures/style2.css')
 
 jadeUsemin will create a minified css file called style.min.css which is a concated and minified version of both styles.
 
+#### Optimized jade file output [**new in version 0.4.0**]
+
+`grunt-jade-usemin` has the option to output optimized jade files. This means you can remove the development build blocks
+and turn them into their optimized counterparts.
+
+In your grunt configuration you need to configure a destination file (see: [grunt files](http://gruntjs.com/configuring-tasks#files)).
+
+Then if your `src` jade file is:
+
+```jade
+//-<!-- build:css test/compiled/style.min.css -->
+link(rel='stylesheet', href='/test/fixtures/style1.css')
+link(rel='stylesheet', href='/test/fixtures/style2.css')
+//-<!-- endbuild -->
+```
+
+Your target jade file will turn into:
+
+```jade
+link(rel='stylesheet', href='test/compiled/style.min.css')
+```
+
+**Note: in order to create the optimized target, jade-usemin takes the first src found and uses that as a template**
+
 ### Available Options
 
 ##### Uglify
@@ -93,15 +120,18 @@ grunt.initConfig({
   jadeUsemin: {
     main: {
       options: {
-        uglify: true, //optional - whether to run uglify js besides concat [default=true]
+        uglify: true, //whether to run uglify js besides concat [default=true]
         prefix: '', //optional - add prefix to the path [default='']
         replacePath: {
             '#{env}': 'dist' //optional - key value to replace in src path
         }
       },
-      files: {
+      files: [{
         src: ['src/index.jade', 'src/index2.jade']
-      }
+      },
+        src: ['src/index.jade'],
+        dest: 'dist/index.jade'
+     }]
     }
   },
 })

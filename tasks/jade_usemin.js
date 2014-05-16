@@ -45,6 +45,7 @@ module.exports = function (grunt) {
         var tasks = [];
         var tasksToRun = [];
         var extractedTargets = {};
+        var jadeSrc;
 
         //set task options
         jadeUsemin.options = this.options({
@@ -54,6 +55,8 @@ module.exports = function (grunt) {
 
         //iterate through each files
         _.each(this.files, function (file) {
+            //reset jade src
+            jadeSrc = '';
             //handle file src
             _.each(file.src, function (src) {
                 grunt.log.writeln('Processing jade file', src);
@@ -61,10 +64,16 @@ module.exports = function (grunt) {
                 if (path.extname(src) !== '.jade') {
                     return grunt.log.warn('Not processing %s because of unsupported extension: %s', src);
                 }
-                jadeUsemin.extractTargetsFromJade(src, extractedTargets);
+                var jadeContents = grunt.file.read(src);
+                jadeUsemin.extractTargetsFromJade(jadeContents, extractedTargets);
+                //add src
+                jadeSrc += jadeContents;
             });
             //TODO - handle file targets (file.dest)
             //Need to re-create jade file with build blocks replaced
+            if (file.dest) {
+                grunt.file.write(file.dest, jadeSrc);
+            }
         });
 
         var processOptions = {

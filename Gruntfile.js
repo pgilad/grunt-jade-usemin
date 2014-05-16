@@ -28,7 +28,11 @@ module.exports = function (grunt) {
                 }
             },
             test: {
-                src: 'test/fixtures/*.jade'
+                files: [{
+                    'test/compiled/basic.jade': 'test/fixtures/basic.jade'
+                }, {
+                    src: 'test/fixtures/{multiple,replacePath}.jade'
+                }]
             }
         },
 
@@ -51,7 +55,7 @@ module.exports = function (grunt) {
 
         // Unit tests.
         nodeunit: {
-            tests: ['test/*_test.js']
+            tests: ['test/*.js']
         }
 
     });

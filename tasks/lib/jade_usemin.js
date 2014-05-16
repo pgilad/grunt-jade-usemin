@@ -85,7 +85,7 @@ exports.task = function (grunt) {
         tempExtraction[target].src.push(src);
     };
 
-    exports.extractTargetsFromJade = function (location, extractedTargets) {
+    exports.extractTargetsFromJade = function (jadeContents, extractedTargets) {
         //current temp file
         var srcRegex;
         var insideBuild = false;
@@ -95,7 +95,7 @@ exports.task = function (grunt) {
         var tempExtraction = {};
         var prefix = exports.options.prefix;
         //split file by line-breaks
-        var file = grunt.file.read(location).split('\n');
+        var file = jadeContents.split('\n');
 
         _.each(file, function (line, lineIndex) {
             //if still scanning for build:<type>

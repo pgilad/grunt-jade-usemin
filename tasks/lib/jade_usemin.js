@@ -8,10 +8,10 @@ var _ = require('lodash');
 
 var getFileSrc = function (str, type) {
     if (type === 'js') {
-        return str.match(/src=['"]((\w*[\/._-]*)+)['"]/i);
+        return str.match(/script.+src=['"]([^"']+)['"]/mi);
     }
     if (type === 'css') {
-        return str.match(/href=['"]((\w*[\/._-]*)+)['"]/i);
+        return str.match(/link.+href=['"]([^"']+)['"]/mi);
     }
     return null;
 };
@@ -27,12 +27,23 @@ var extractBuildPattern = function (str) {
     if (!str) {
         return null;
     }
-    //-<!-- build:js test/compiled/basic.min.js -->
-    var result = str.match(/<!--\s*build:\s*(\w+)\s+(\S+(?=\s+-->))/i);
-    if (result && result.length && result[1] && result[2]) {
+    // @reference: https://github.com/yeoman/grunt-usemin/blob/master/lib/file.js#L36-L46
+    // start build pattern: will match
+    //  * <!-- build:[target] target -->
+    //  * <!-- build:[target](alternate search path) target -->
+    // The following matching param are set when there's a match
+    //   * 0 : the whole matched expression
+    //   * 1 : the target (i.e. type)    [required]
+    //   * 2 : the alternate search path [optional]
+    //   * 3 : the target                [required]
+
+    var result = str.match(/<!--\s*build:\s*(\w+)\s*(?:\(([^\)]+)\))?\s*(\S+)\s*-->/i);
+
+    if (result && result.length && result[1] && result[3]) {
         return {
             type: result[1],
-            target: result[2]
+            altPath: result[2],
+            target: result[3]
         };
     }
     return null;
@@ -109,8 +120,8 @@ exports.task = function (grunt) {
     var jadeParser = function (jadeContents, extractedTargets, options) {
         var insideBuild = false;
         var buildPattern;
-        var target = null;
-        var type = null;
+        var target;
+        var type;
         var tempExtraction = {};
         var prefix = options.prefix;
         var replacePath = options.replacePath;
@@ -129,6 +140,7 @@ exports.task = function (grunt) {
                 if (buildPattern) {
                     type = buildPattern.type;
                     target = buildPattern.target;
+                    //TODO altPath = buildPattern.altPath;
 
                     //if unrecognized build type
                     if (type !== 'css' && type !== 'js') {
@@ -149,7 +161,6 @@ exports.task = function (grunt) {
             else if (line.match(/<!--\s*endbuild\s*-->/i) && type && target) {
                 grunt.verbose.writelns('Found endbuild pattern in line ', lineIndex);
                 extractedTargets[target] = {};
-
                 _.merge(extractedTargets[target], tempExtraction[target]);
 
                 grunt.log.oklns('Finished with target block:', target);
@@ -165,6 +176,7 @@ exports.task = function (grunt) {
 
                 if (src && src[1]) {
                     src = src[1];
+                    //remove prefix /
                     if (src.charAt(0) === '/') {
                         src = src.substr(1);
                     }
@@ -179,9 +191,12 @@ exports.task = function (grunt) {
                         addSrcToTarget(tempExtraction, target, src);
                     } else {
                         //attempt to resolve path relative to location (where jade file is)
+                        //TODO: use altPath
                         var locationPath = path.dirname(location);
                         var newSrcPath = path.resolve(locationPath, src);
                         grunt.verbose.writelns('Src file ' + src + " wasn't found. Looking for it relative to jade file");
+
+                        //let's see if we found it
                         if (grunt.file.exists(newSrcPath)) {
                             addSrcToTarget(tempExtraction, target, newSrcPath);
                         }
@@ -195,7 +210,7 @@ exports.task = function (grunt) {
         });
 
         if (insideBuild) {
-            grunt.fatal("Couldn't find 'endbuild' in file: " + location + ", target: " + target);
+            grunt.fatal("Couldn't find '<!-- endbuild -->' in file: " + location + ", target: " + target);
         }
     };
 

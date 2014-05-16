@@ -46,7 +46,8 @@ i.e `process.env` or `node env`.
 **jadeUsemin** then adds the scripts/styles inside the lines until it meets the closing line:
 `<!-- endbuild -->` Which signifies the end of a usemin build block.
 
-##### for the following to work, you need to expose your `env` variable when rendering the jade file.
+**Note:** for the following to work, you need to expose your `env` variable when rendering the jade file.
+
 This is an example `index.jade`:
 
 ```jade
@@ -70,7 +71,7 @@ link(rel='stylesheet', href='/test/fixtures/style2.css')
 //-<!-- endbuild -->
 ```
 
-jadeUsemin will create a minified css file called style.min.css which is a concated and minified version of both styles.
+**jadeUsemin** will create a minified css file called style.min.css which is a concated and minified version of both styles.
 
 #### Optimized jade file output [**new in version 0.4.0**]
 
@@ -94,7 +95,7 @@ Your target jade file will turn into:
 link(rel='stylesheet', href='test/compiled/style.min.css')
 ```
 
-**Note:** in order to create the optimized target, jade-usemin takes the first src in the relevant build block found and uses that as a template
+**Note:** in order to create the optimized target, `grunt-jade-usemin` takes the first src in the relevant build block found and uses that as a template
 
 ### Available Options
 

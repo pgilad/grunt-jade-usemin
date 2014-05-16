@@ -14,7 +14,7 @@ exports.jadeUsemin = {
         done();
     },
     basic: function (test) {
-        test.expect(1);
+        test.expect(2);
 
         fileCmp(test, 'basic.min.js');
         fileCmp(test, 'basic.jade');

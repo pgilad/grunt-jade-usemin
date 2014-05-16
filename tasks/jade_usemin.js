@@ -65,8 +65,7 @@ module.exports = function (grunt) {
                 //get actual file contents
                 var jadeContents = grunt.file.read(src);
                 //parse through optimizer
-                jadeUsemin.jadeParser(jadeContents, extractedTargets, options);
-                //TODO - get optimized source
+                jadeContents = jadeUsemin.jadeParser(jadeContents, extractedTargets, options);
                 //add src
                 jadeSrc += jadeContents;
             });

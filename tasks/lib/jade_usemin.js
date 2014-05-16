@@ -8,10 +8,10 @@ var _ = require('lodash');
 
 var getFileSrc = function (str, type) {
     if (type === 'js') {
-        return str.match(/script.+src=['"]([^"']+)['"]/mi);
+        return str.match(/script.+src\s*=\s*['"]([^"']+)['"]/mi);
     }
     if (type === 'css') {
-        return str.match(/link.+href=['"]([^"']+)['"]/mi);
+        return str.match(/link.+href\s*=\s*['"]([^"']+)['"]/mi);
     }
     return null;
 };
@@ -37,7 +37,7 @@ var extractBuildPattern = function (str) {
     //   * 2 : the alternate search path [optional]
     //   * 3 : the target                [required]
 
-    var result = str.match(/<!--\s*build:\s*(\w+)\s*(?:\(([^\)]+)\))?\s*(\S+)\s*-->/i);
+    var result = str.match(/<!--\s*build:\s*(js|css)\s*(?:\(([^\)]+)\))?\s*(\S+)\s*-->/i);
 
     if (result && result.length && result[1] && result[3]) {
         return {
@@ -118,13 +118,12 @@ exports.task = function (grunt) {
     };
 
     var jadeParser = function (jadeContents, extractedTargets, options) {
-        var insideBuild = false;
-        var buildPattern;
-        var target;
-        var type;
-        var tempExtraction = {};
         var prefix = options.prefix;
         var replacePath = options.replacePath;
+
+        var buildPattern, target, type, firstSrc, optimizedSrc = [];
+        var insideBuild = false;
+        var tempExtraction = {};
         var lines = jadeContents.split('\n');
 
         _.each(lines, function (line, lineIndex) {
@@ -142,12 +141,6 @@ exports.task = function (grunt) {
                     target = buildPattern.target;
                     //TODO altPath = buildPattern.altPath;
 
-                    //if unrecognized build type
-                    if (type !== 'css' && type !== 'js') {
-                        return grunt.log.error('Unsupported build type: ' + type + ' in line number:' + lineIndex);
-                    } else if (!target) {
-                        return grunt.log.warn('Target not found in line:' + line);
-                    }
                     grunt.verbose.writelns('Found build:<type> pattern in line:', lineIndex);
                     //default empty target
                     tempExtraction[target] = {
@@ -155,6 +148,9 @@ exports.task = function (grunt) {
                         src: []
                     };
                     insideBuild = true;
+                } else {
+                    //add line to return
+                    optimizedSrc.push(line);
                 }
             }
             //got to end of build: <!-- endbuild -->
@@ -164,7 +160,9 @@ exports.task = function (grunt) {
                 _.merge(extractedTargets[target], tempExtraction[target]);
 
                 grunt.log.oklns('Finished with target block:', target);
-                type = target = insideBuild = null;
+                optimizedSrc.push(firstSrc.replace(/['"]([^"']+)['"]/i, target));
+                //reset build vars
+                type = target = insideBuild = firstSrc = null;
             }
             //we are inside a build:<type> block
             else {
@@ -188,6 +186,7 @@ exports.task = function (grunt) {
 
                     //if path actually exists
                     if (grunt.file.exists(src)) {
+                        firstSrc = line;
                         addSrcToTarget(tempExtraction, target, src);
                     } else {
                         //attempt to resolve path relative to location (where jade file is)
@@ -198,6 +197,7 @@ exports.task = function (grunt) {
 
                         //let's see if we found it
                         if (grunt.file.exists(newSrcPath)) {
+                            firstSrc = line;
                             addSrcToTarget(tempExtraction, target, newSrcPath);
                         }
                         //src file wasn't found
@@ -212,6 +212,8 @@ exports.task = function (grunt) {
         if (insideBuild) {
             grunt.fatal("Couldn't find '<!-- endbuild -->' in file: " + location + ", target: " + target);
         }
+        //return optimized src
+        return optimizedSrc.join('\n');
     };
 
     return {

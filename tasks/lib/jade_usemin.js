@@ -8,8 +8,6 @@ var _ = require('lodash');
 
 // set up relevant regex for jade find
 var regex = {
-    buildRegex: /<!-- build/,
-    buildExtractRegex: /build:(\w+)\s+((\w*[\/._-]*)+)/,
     endBuildRegex: /<!-- endbuild/,
     jsSourceRegex: /src=['"]((\w*[\/._-]*)+)['"]/,
     cssSourceRegex: /href=['"]((\w*[\/._-]*)+)['"]/
@@ -20,6 +18,27 @@ var getSrcRegex = function (type) {
         return regex.jsSourceRegex;
     } else if (type === 'css') {
         return regex.cssSourceRegex;
+    }
+    return null;
+};
+
+/**
+ * extractBuildPattern
+ *
+ * @param str string to match for the pattern
+ * @return {Null|Object}
+ */
+var extractBuildPattern = function (str) {
+    if (!str) {
+        return null;
+    }
+    //-<!-- build:js test/compiled/basic.min.js -->
+    var result = str.match(/build:\s*(\w+)\s+(\S+)/i);
+    if (result && result.length && result[1] && result[2]) {
+        return {
+            type: result[1],
+            target: result[2]
+        };
     }
     return null;
 };
@@ -53,20 +72,21 @@ exports.task = function (grunt) {
      * @param {Object} params.concat
      * @param {Object} params.uglify
      * @param {Object} params.cssmin
-     * @returns {number} totalFiles Total files processed as source files
+     * @returns {number} filesProccessed Total files processed as source files
      */
     exports.processTasks = function (params) {
         var extractedTargets = params.extractedTargets;
         var concat = params.concat;
         var uglify = params.uglify;
         var cssmin = params.cssmin;
+
         //total src files processed
-        var totalFiles = 0;
+        var filesProccessed = 0;
 
         _.each(extractedTargets, function (item, target) {
             addToConcatTask(concat, item.src, target);
             grunt.log.oklns('Target ' + target + ' contains ' + item.src.length + ' files.');
-            totalFiles += item.src.length;
+            filesProccessed += item.src.length;
 
             if (item.type === 'js' && uglify) {
                 addTargetToTask(uglify, target);
@@ -77,10 +97,10 @@ exports.task = function (grunt) {
             }
         });
 
-        return totalFiles;
+        return filesProccessed;
     };
 
-    exports.addSrcToTarget = function (tempExtraction, target, src) {
+    var addSrcToTarget = function (tempExtraction, target, src) {
         grunt.verbose.writelns('Adding src file ' + src);
         tempExtraction[target].src.push(src);
     };
@@ -88,7 +108,7 @@ exports.task = function (grunt) {
     exports.jadeParser = function (jadeContents, extractedTargets, options) {
         var srcRegex;
         var insideBuild = false;
-        var extracted = [];
+        var buildPattern;
         var target = null;
         var type = null;
         var tempExtraction = {};
@@ -98,16 +118,19 @@ exports.task = function (grunt) {
         _.each(lines, function (line, lineIndex) {
             //if still scanning for build:<type>
             if (!insideBuild) {
-                //look for pattern build:<type>
-                if (line.match(regex.buildRegex)) {
-                    //replace path from options.replacePath
-                    _.each(options.replacePath, function (path, key) {
-                        line = line.replace(key, path);
-                    });
+                //match for build pattern
+                buildPattern = extractBuildPattern(line);
+                //if found a valid build pattern
+                if (buildPattern) {
+                    type = buildPattern.type;
+                    target = buildPattern.target;
 
-                    extracted = line.match(regex.buildExtractRegex);
-                    type = extracted[1];
-                    target = extracted[2];
+                    if (options.replacePath) {
+                        //replace path from options.replacePath
+                        _.each(options.replacePath, function (path, key) {
+                            target = target.replace(key, path);
+                        });
+                    }
 
                     //if unrecognized build type
                     if (type !== 'css' && type !== 'js') {
@@ -115,14 +138,12 @@ exports.task = function (grunt) {
                     } else if (!target) {
                         return grunt.log.warn('Target not found in line:' + line);
                     }
-
                     grunt.verbose.writelns('Found build:<type> pattern in line:', lineIndex);
                     //default empty target
                     tempExtraction[target] = {
                         type: type,
                         src: []
                     };
-
                     insideBuild = true;
                 }
             }
@@ -158,14 +179,14 @@ exports.task = function (grunt) {
 
                     //if path actually exists
                     if (grunt.file.exists(src)) {
-                        exports.addSrcToTarget(tempExtraction, target, src);
+                        addSrcToTarget(tempExtraction, target, src);
                     } else {
                         //attempt to resolve path relative to location (where jade file is)
                         var locationPath = path.dirname(location);
                         var newSrcPath = path.resolve(locationPath, src);
                         grunt.verbose.writelns('Src file ' + src + " wasn't found. Looking for it relative to jade file");
                         if (grunt.file.exists(newSrcPath)) {
-                            exports.addSrcToTarget(tempExtraction, target, newSrcPath);
+                            addSrcToTarget(tempExtraction, target, newSrcPath);
                         }
                         //src file wasn't found
                         else {

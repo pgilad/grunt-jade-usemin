@@ -40,7 +40,7 @@ var defaultTasks = {
 module.exports = function (grunt) {
     var jadeUsemin = require('./lib/jade_usemin').task(grunt);
 
-    grunt.registerMultiTask('jadeUsemin', 'concat and minify scripts in Jade files with UseMin format', function () {
+    grunt.registerMultiTask('jadeUsemin', 'concat, uglify & cssmin files with UseMin format', function () {
         var tasks = [];
         var tasksToRun = [];
         var extractedTargets = {};
@@ -79,12 +79,13 @@ module.exports = function (grunt) {
             extractedTargets: extractedTargets
         };
 
-        tasks.push('concat');
+        //add tasks to run
+        tasks.push('concat', 'cssmin');
         if (options.uglify) {
             tasks.push('uglify');
         }
-        tasks.push('cssmin');
 
+        //setup according grunt tasks
         _.each(tasks, function (task) {
             //setup task global options
             jadeUsemin[task] = grunt.config(task) || {};
@@ -93,11 +94,11 @@ module.exports = function (grunt) {
             processOptions[task] = jadeUsemin[task].jadeUsemin;
         });
 
-        //process uglify and concat tasks
-        jadeUsemin.totalFiles = jadeUsemin.processTasks(processOptions);
+        //process tasks
+        var totalFiles = jadeUsemin.processTasks(processOptions);
 
         //only run if there are src file located
-        if (jadeUsemin.totalFiles > 0) {
+        if (totalFiles > 0) {
             _.each(tasks, function (task) {
                 if (jadeUsemin[task].jadeUsemin.files.length) {
                     //configure task for grunt
@@ -113,13 +114,14 @@ module.exports = function (grunt) {
             tasksToRun.unshift('concat:jadeUsemin');
         }
 
+        //to run when completed
         tasksToRun.push('jadeUseminComplete');
 
         //assign a finalize task to notify user that task finished, and how many files processed
         grunt.registerTask('jadeUseminComplete', function () {
-            grunt.log.oklns('jadeUsemin finished after processing ' + jadeUsemin.totalFiles + ' files.');
+            grunt.log.oklns('jadeUsemin finished after processing ' + totalFiles + ' files.');
         });
 
-        grunt.task.run(tasksToRun);
+        return grunt.task.run(tasksToRun);
     });
 };

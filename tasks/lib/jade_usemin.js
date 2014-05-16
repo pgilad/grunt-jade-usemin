@@ -18,7 +18,16 @@ var getFileSrc = function (str, type) {
 
 /**
  * extractBuildPattern
- * TODO write this as an npm module and add relative dir
+ *
+ * @reference: https://github.com/yeoman/grunt-usemin/blob/master/lib/file.js#L36-L46
+ * start build pattern: will match
+ *  * <!-- build:[target] target -->
+ *  * <!-- build:[target](alternate search path) target -->
+ * The following matching param are set when there's a match
+ *   * 0 : the whole matched expression
+ *   * 1 : the target (i.e. type)    [required]
+ *   * 2 : the alternate search path [optional]
+ *   * 3 : the target                [required]
  *
  * @param str string to match for the pattern
  * @return {Null|Object}
@@ -27,18 +36,10 @@ var extractBuildPattern = function (str) {
     if (!str) {
         return null;
     }
-    // @reference: https://github.com/yeoman/grunt-usemin/blob/master/lib/file.js#L36-L46
-    // start build pattern: will match
-    //  * <!-- build:[target] target -->
-    //  * <!-- build:[target](alternate search path) target -->
-    // The following matching param are set when there's a match
-    //   * 0 : the whole matched expression
-    //   * 1 : the target (i.e. type)    [required]
-    //   * 2 : the alternate search path [optional]
-    //   * 3 : the target                [required]
 
-    var result = str.match(/<!--\s*build:\s*(js|css)\s*(?:\(([^\)]+)\))?\s*(\S+)\s*-->/i);
+    var result = str.match(/<!--\s*build:\s*(\w+)\s*(?:\(([^\)]+)\))?\s*(\S+)\s*-->/i);
 
+    //required params are type & target
     if (result && result.length && result[1] && result[3]) {
         return {
             type: result[1],
@@ -121,7 +122,7 @@ exports.task = function (grunt) {
         var prefix = options.prefix;
         var replacePath = options.replacePath;
 
-        var buildPattern, target, type, firstSrc, optimizedSrc = [];
+        var buildPattern, target, type, insideBuildFirstItem = {}, optimizedSrc = [];
         var insideBuild = false;
         var tempExtraction = {};
         var lines = jadeContents.split('\n');
@@ -140,6 +141,10 @@ exports.task = function (grunt) {
                     type = buildPattern.type;
                     target = buildPattern.target;
                     //TODO altPath = buildPattern.altPath;
+
+                    if (type !== 'css' && type !== 'js') {
+                        grunt.log.warn('Unsupported build type: ' + type);
+                    }
 
                     grunt.verbose.writelns('Found build:<type> pattern in line:', lineIndex);
                     //default empty target
@@ -160,9 +165,10 @@ exports.task = function (grunt) {
                 _.merge(extractedTargets[target], tempExtraction[target]);
 
                 grunt.log.oklns('Finished with target block:', target);
-                optimizedSrc.push(firstSrc.replace(/['"]([^"']+)['"]/i, target));
+                optimizedSrc.push(insideBuildFirstItem.line.replace(insideBuildFirstItem.src, target));
                 //reset build vars
-                type = target = insideBuild = firstSrc = null;
+                insideBuildFirstItem = {};
+                type = target = insideBuild = null;
             }
             //we are inside a build:<type> block
             else {
@@ -174,6 +180,10 @@ exports.task = function (grunt) {
 
                 if (src && src[1]) {
                     src = src[1];
+                    //assign first source
+                    insideBuildFirstItem.src = insideBuildFirstItem.src || src;
+                    insideBuildFirstItem.line = insideBuildFirstItem.line || line;
+
                     //remove prefix /
                     if (src.charAt(0) === '/') {
                         src = src.substr(1);
@@ -186,7 +196,6 @@ exports.task = function (grunt) {
 
                     //if path actually exists
                     if (grunt.file.exists(src)) {
-                        firstSrc = line;
                         addSrcToTarget(tempExtraction, target, src);
                     } else {
                         //attempt to resolve path relative to location (where jade file is)
@@ -197,7 +206,6 @@ exports.task = function (grunt) {
 
                         //let's see if we found it
                         if (grunt.file.exists(newSrcPath)) {
-                            firstSrc = line;
                             addSrcToTarget(tempExtraction, target, newSrcPath);
                         }
                         //src file wasn't found

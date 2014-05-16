@@ -93,21 +93,21 @@ Your target jade file will turn into:
 link(rel='stylesheet', href='test/compiled/style.min.css')
 ```
 
-**Note: in order to create the optimized target, jade-usemin takes the first src found and uses that as a template**
+**Note:** in order to create the optimized target, jade-usemin takes the first src in the relevant build block found and uses that as a template
 
 ### Available Options
 
 ##### Uglify
-`{Boolean} [uglify=true]` Whether grunt-contrib-uglify should be run on JS files as well as concat.
+**Boolean** `Default: true`. Whether grunt-contrib-uglify should be run on JS files as well as concat.
 Specifying false will only concat the src js that are found.
 Anything else will default to true, which will also uglify the js files.
 
 ##### Prefix
-`{String} [prefix='']` This adds some flexibility to where you keep your public folder. It
+**String** `Default: ''`. This adds some flexibility to where you keep your public folder. It
 allows you to add a prefix to the path.
 
 ##### replacePath
-`{Object} [default={}]` This option allows you to specify interpolation patterns for the source and build paths of your js/css.
+ **Object** `Default: {}`. This option allows you to specify interpolation patterns for the source and build paths of your js/css.
 Each key value you specify here will be interpolated in the src paths that the plugin finds.
 For example if you add: `'#{env}': 'dist'` then all occurances of `#{env}` in src paths will be replaced with `dist`.
 This gives you the power to change the paths according to different working enviornments.

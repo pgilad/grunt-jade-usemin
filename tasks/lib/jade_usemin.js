@@ -6,24 +6,19 @@
 var path = require('path');
 var _ = require('lodash');
 
-// set up relevant regex for jade find
-var regex = {
-    endBuildRegex: /<!-- endbuild/,
-    jsSourceRegex: /src=['"]((\w*[\/._-]*)+)['"]/,
-    cssSourceRegex: /href=['"]((\w*[\/._-]*)+)['"]/
-};
-
-var getSrcRegex = function (type) {
+var getFileSrc = function (str, type) {
     if (type === 'js') {
-        return regex.jsSourceRegex;
-    } else if (type === 'css') {
-        return regex.cssSourceRegex;
+        return str.match(/src=['"]((\w*[\/._-]*)+)['"]/i);
+    }
+    if (type === 'css') {
+        return str.match(/href=['"]((\w*[\/._-]*)+)['"]/i);
     }
     return null;
 };
 
 /**
  * extractBuildPattern
+ * TODO write this as an npm module and add relative dir
  *
  * @param str string to match for the pattern
  * @return {Null|Object}
@@ -33,7 +28,7 @@ var extractBuildPattern = function (str) {
         return null;
     }
     //-<!-- build:js test/compiled/basic.min.js -->
-    var result = str.match(/build:\s*(\w+)\s+(\S+)/i);
+    var result = str.match(/<!--\s*build:\s*(\w+)\s+(\S+(?=\s+-->))/i);
     if (result && result.length && result[1] && result[2]) {
         return {
             type: result[1],
@@ -43,26 +38,37 @@ var extractBuildPattern = function (str) {
     return null;
 };
 
+/**
+ * Add Concat file target
+ * @param {Object} concat
+ * @param src
+ * @param dest
+ */
+var addToConcatTask = function (concat, src, dest) {
+    concat.files.push({
+        src: src,
+        dest: dest
+    });
+};
+
+var interpolateSrc = function (src, keys) {
+    _.each(keys, function (path, key) {
+        src = src.replace(key, path);
+    });
+    return src;
+};
+
+var addTargetToTask = function (task, target) {
+    var targetObj = {};
+    targetObj[target] = target;
+    task.files.push(targetObj);
+};
+
 exports.task = function (grunt) {
-    var exports = {};
 
-    /**
-     * Add Concat file target
-     * @param {Object} concat
-     * @param src
-     * @param dest
-     */
-    var addToConcatTask = function (concat, src, dest) {
-        concat.files.push({
-            src: src,
-            dest: dest
-        });
-    };
-
-    var addTargetToTask = function (task, target) {
-        var targetObj = {};
-        targetObj[target] = target;
-        task.files.push(targetObj);
+    var addSrcToTarget = function (tempExtraction, target, src) {
+        grunt.verbose.writelns('Adding src file ' + src);
+        tempExtraction[target].src.push(src);
     };
 
     /**
@@ -74,7 +80,7 @@ exports.task = function (grunt) {
      * @param {Object} params.cssmin
      * @returns {number} filesProccessed Total files processed as source files
      */
-    exports.processTasks = function (params) {
+    var processTasks = function (params) {
         var extractedTargets = params.extractedTargets;
         var concat = params.concat;
         var uglify = params.uglify;
@@ -100,37 +106,29 @@ exports.task = function (grunt) {
         return filesProccessed;
     };
 
-    var addSrcToTarget = function (tempExtraction, target, src) {
-        grunt.verbose.writelns('Adding src file ' + src);
-        tempExtraction[target].src.push(src);
-    };
-
-    exports.jadeParser = function (jadeContents, extractedTargets, options) {
-        var srcRegex;
+    var jadeParser = function (jadeContents, extractedTargets, options) {
         var insideBuild = false;
         var buildPattern;
         var target = null;
         var type = null;
         var tempExtraction = {};
         var prefix = options.prefix;
+        var replacePath = options.replacePath;
         var lines = jadeContents.split('\n');
 
         _.each(lines, function (line, lineIndex) {
             //if still scanning for build:<type>
             if (!insideBuild) {
+                if (replacePath) {
+                    line = interpolateSrc(line, replacePath);
+                }
+
                 //match for build pattern
                 buildPattern = extractBuildPattern(line);
                 //if found a valid build pattern
                 if (buildPattern) {
                     type = buildPattern.type;
                     target = buildPattern.target;
-
-                    if (options.replacePath) {
-                        //replace path from options.replacePath
-                        _.each(options.replacePath, function (path, key) {
-                            target = target.replace(key, path);
-                        });
-                    }
 
                     //if unrecognized build type
                     if (type !== 'css' && type !== 'js') {
@@ -148,7 +146,7 @@ exports.task = function (grunt) {
                 }
             }
             //got to end of build: <!-- endbuild -->
-            else if (line.match(regex.endBuildRegex) && type && target) {
+            else if (line.match(/<!--\s*endbuild\s*-->/i) && type && target) {
                 grunt.verbose.writelns('Found endbuild pattern in line ', lineIndex);
                 extractedTargets[target] = {};
 
@@ -159,13 +157,12 @@ exports.task = function (grunt) {
             }
             //we are inside a build:<type> block
             else {
-                //replace path from options.replacePath
-                _.each(options.replacePath, function (path, key) {
-                    line = line.replace(key, path);
-                });
+                if (replacePath) {
+                    line = interpolateSrc(line, replacePath);
+                }
 
-                srcRegex = getSrcRegex(type);
-                var src = line.match(srcRegex);
+                var src = getFileSrc(line, type);
+
                 if (src && src[1]) {
                     src = src[1];
                     if (src.charAt(0) === '/') {
@@ -202,5 +199,8 @@ exports.task = function (grunt) {
         }
     };
 
-    return exports;
+    return {
+        jadeParser: jadeParser,
+        processTasks: processTasks
+    };
 };

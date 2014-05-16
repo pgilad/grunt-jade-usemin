@@ -1,0 +1,16 @@
+!!!
+html
+    head
+        title Test
+        //-<!-- build:css test/compiled/styles.min.css -->
+        link(rel='stylesheet', href='/test/src/style1.css')
+        link(rel='stylesheet', href='/test/src/style2.css')
+        //-<!-- endbuild -->
+    body
+        header Test
+        section.some-class(some-property="hello") Test
+
+        //-<!-- build:js test/compiled/scripts.min.js -->
+        script(src='./test/src/script1.js')
+        script(src='./test/src/script2.js')
+        //-<!-- endbuild -->

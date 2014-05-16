@@ -29,9 +29,13 @@ module.exports = function (grunt) {
             },
             test: {
                 files: [{
-                    'test/compiled/basic.jade': 'test/fixtures/basic.jade'
+                    dest: 'test/compiled/basic.jade',
+                    src: 'test/fixtures/basic.jade'
                 }, {
                     src: 'test/fixtures/{multiple,replacePath}.jade'
+                }, {
+                    src: 'test/fixtures/production.jade',
+                    dest: 'test/compiled/production.jade'
                 }]
             }
         },

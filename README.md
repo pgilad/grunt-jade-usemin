@@ -28,6 +28,7 @@ This project is based on the [grunt-usemin](https://github.com/yeoman/grunt-usem
 `grunt-jade-usemin` is meant to be an assisting tool in preparing projects for build.
 
 The steps of this plugin are as follows:
+
 1. Scan **src** jade files.
 2. Locate **build blocks** defined by `<!-- build:type target -->`.
 3. Gather **css** and **js** files in build blocks and run them through concat, cssmin & uglify.

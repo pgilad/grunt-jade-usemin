@@ -25,9 +25,7 @@ var getSrcRegex = function (type) {
 };
 
 exports.task = function (grunt) {
-    var exports = {
-        options: {}
-    };
+    var exports = {};
 
     /**
      * Add Concat file target
@@ -35,14 +33,14 @@ exports.task = function (grunt) {
      * @param src
      * @param dest
      */
-    exports.addToConcatTask = function (concat, src, dest) {
+    var addToConcatTask = function (concat, src, dest) {
         concat.files.push({
             src: src,
             dest: dest
         });
     };
 
-    exports.addTargetToTask = function (task, target) {
+    var addTargetToTask = function (task, target) {
         var targetObj = {};
         targetObj[target] = target;
         task.files.push(targetObj);
@@ -51,27 +49,29 @@ exports.task = function (grunt) {
     /**
      * Process the extracted targets
      * @param params
-     * @param {Object} parameters.extractedTargets
-     * @param parameters.concat
-     * @param parameters.uglify
+     * @param {Object} params.extractedTargets
+     * @param {Object} params.concat
+     * @param {Object} params.uglify
+     * @param {Object} params.cssmin
      * @returns {number} totalFiles Total files processed as source files
      */
     exports.processTasks = function (params) {
         var extractedTargets = params.extractedTargets;
         var concat = params.concat;
-        var uglify = exports.options.uglify ? params.uglify : null;
+        var uglify = params.uglify;
         var cssmin = params.cssmin;
+        //total src files processed
         var totalFiles = 0;
 
         _.each(extractedTargets, function (item, target) {
-            exports.addToConcatTask(concat, item.src, target);
+            addToConcatTask(concat, item.src, target);
             grunt.log.oklns('Target ' + target + ' contains ' + item.src.length + ' files.');
             totalFiles += item.src.length;
 
             if (item.type === 'js' && uglify) {
-                exports.addTargetToTask(uglify, target);
+                addTargetToTask(uglify, target);
             } else if (item.type === 'css') {
-                exports.addTargetToTask(cssmin, target);
+                addTargetToTask(cssmin, target);
             } else {
                 return null;
             }
@@ -85,25 +85,23 @@ exports.task = function (grunt) {
         tempExtraction[target].src.push(src);
     };
 
-    exports.extractTargetsFromJade = function (jadeContents, extractedTargets) {
-        //current temp file
+    exports.jadeParser = function (jadeContents, extractedTargets, options) {
         var srcRegex;
         var insideBuild = false;
-        var target = null;
         var extracted = [];
+        var target = null;
         var type = null;
         var tempExtraction = {};
-        var prefix = exports.options.prefix;
-        //split file by line-breaks
-        var file = jadeContents.split('\n');
+        var prefix = options.prefix;
+        var lines = jadeContents.split('\n');
 
-        _.each(file, function (line, lineIndex) {
+        _.each(lines, function (line, lineIndex) {
             //if still scanning for build:<type>
             if (!insideBuild) {
                 //look for pattern build:<type>
                 if (line.match(regex.buildRegex)) {
                     //replace path from options.replacePath
-                    _.each(exports.options.replacePath, function (path, key) {
+                    _.each(options.replacePath, function (path, key) {
                         line = line.replace(key, path);
                     });
 
@@ -141,7 +139,7 @@ exports.task = function (grunt) {
             //we are inside a build:<type> block
             else {
                 //replace path from options.replacePath
-                _.each(exports.options.replacePath, function (path, key) {
+                _.each(options.replacePath, function (path, key) {
                     line = line.replace(key, path);
                 });
 

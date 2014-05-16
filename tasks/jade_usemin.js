@@ -1,16 +1,15 @@
 /*
  * grunt-jade-usemin
  *
- *
  * Copyright (c) 2014 Gilad Peleg
  * Licensed under the MIT license.
  */
 
 'use strict';
 
-var _ = require('lodash');
 var os = require('os');
 var path = require('path');
+var _ = require('lodash');
 
 //set up default tasks options
 var defaultTasks = {
@@ -48,12 +47,11 @@ module.exports = function (grunt) {
         var jadeSrc;
 
         //set task options
-        jadeUsemin.options = this.options({
+        var options = this.options({
             uglify: true
         });
-        grunt.verbose.writeflags(jadeUsemin.options, 'Target Options');
 
-        //iterate through each files
+        //iterate through each file object
         _.each(this.files, function (file) {
             //reset jade src
             jadeSrc = '';
@@ -64,14 +62,16 @@ module.exports = function (grunt) {
                 if (path.extname(src) !== '.jade') {
                     return grunt.log.warn('Not processing %s because of unsupported extension: %s', src);
                 }
+                //get actual file contents
                 var jadeContents = grunt.file.read(src);
-                jadeUsemin.extractTargetsFromJade(jadeContents, extractedTargets);
+                //parse through optimizer
+                jadeUsemin.jadeParser(jadeContents, extractedTargets, options);
+                //TODO - get optimized source
                 //add src
                 jadeSrc += jadeContents;
             });
-            //TODO - handle file targets (file.dest)
-            //Need to re-create jade file with build blocks replaced
             if (file.dest) {
+                //write output
                 grunt.file.write(file.dest, jadeSrc);
             }
         });
@@ -81,7 +81,7 @@ module.exports = function (grunt) {
         };
 
         tasks.push('concat');
-        if (jadeUsemin.options.uglify) {
+        if (options.uglify) {
             tasks.push('uglify');
         }
         tasks.push('cssmin');

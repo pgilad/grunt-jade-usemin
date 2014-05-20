@@ -36,6 +36,9 @@ module.exports = function (grunt) {
                 }, {
                     src: 'test/fixtures/production.jade',
                     dest: 'test/compiled/production.jade'
+                }, {
+                    src: 'test/fixtures/solvePath.jade',
+                    dest: 'test/compiled/solvePath.jade'
                 }]
             }
         },

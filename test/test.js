@@ -33,5 +33,10 @@ exports.jadeUsemin = {
         test.expect(1);
         fileCmp(test, 'production.jade');
         test.done();
+    },
+    solvePath: function (test) {
+        test.expect(1);
+        fileCmp(test, 'solvePath.jade');
+        test.done();
     }
 };

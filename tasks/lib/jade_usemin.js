@@ -121,6 +121,7 @@ exports.task = function (grunt) {
     var jadeParser = function (jadeContents, extractedTargets, options) {
         var prefix = options.prefix;
         var replacePath = options.replacePath;
+        var location = options.location;
 
         var buildPattern, target, type, insideBuildFirstItem = {}, optimizedSrc = [];
         var insideBuild = false;

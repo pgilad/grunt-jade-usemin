@@ -18,6 +18,11 @@ module.exports = function (grunt) {
         clean: {
             tests: ['tmp', 'test/compiled']
         },
+        uglify: {
+            options: {
+                compress: true
+            }
+        },
 
         // Configuration to be run (and then tested).
         jadeUsemin: {

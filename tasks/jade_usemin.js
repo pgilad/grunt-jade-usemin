@@ -42,7 +42,6 @@ module.exports = function (grunt) {
 
     grunt.registerMultiTask('jadeUsemin', 'concat, uglify & cssmin files with UseMin format', function () {
         var tasks = [];
-        var tasksToRun = [];
         var extractedTargets = {};
         var jadeSrc;
 
@@ -98,19 +97,20 @@ module.exports = function (grunt) {
         var totalFiles = jadeUsemin.processTasks(extractedTargets, tasksConfig);
 
         //only run if there are src file located
+        var tasksToRun = [];
         if (totalFiles > 0) {
-            _.each(tasks, function (task) {
+            _.each(_.without(tasks, 'concat'), function (task) {
+                //if task has any files to be added
                 if (tasksConfig[task].jadeUsemin.files.length) {
                     //apply config to grunt (for runtime config)
                     grunt.config(task, tasksConfig[task]);
-                    //we will add this at the end
-                    if (task !== 'concat') {
-                        tasksToRun.unshift(task + ':jadeUsemin');
-                    }
+                    //add task target to run
+                    tasksToRun.push(task + ':jadeUsemin');
                 }
             });
 
             //make sure concat:jadeUsemin goes in first
+            grunt.config('concat', tasksConfig.concat);
             tasksToRun.unshift('concat:jadeUsemin');
         }
 

@@ -68,18 +68,15 @@ module.exports = function (grunt) {
                 jadeContents = jadeUsemin.jadeParser(jadeContents, extractedTargets, _.assign(options, {
                     location: src
                 }));
-                //add src
+                //concat jade file src
                 jadeSrc += jadeContents;
             });
+            //if there is a target file
             if (file.dest) {
                 //write output
                 grunt.file.write(file.dest, jadeSrc);
             }
         });
-
-        var processOptions = {
-            extractedTargets: extractedTargets
-        };
 
         //add tasks to run
         tasks.push('concat', 'cssmin');
@@ -87,24 +84,25 @@ module.exports = function (grunt) {
             tasks.push('uglify');
         }
 
+        var tasksConfig = {};
+
         //setup according grunt tasks
         _.each(tasks, function (task) {
-            //setup task global options
-            jadeUsemin[task] = grunt.config(task) || {};
-            //setup task target
-            jadeUsemin[task].jadeUsemin = defaultTasks[task];
-            processOptions[task] = jadeUsemin[task].jadeUsemin;
+            //get task from user's config
+            tasksConfig[task] = grunt.config(task) || {};
+            //setup task:jadeUsemin target
+            tasksConfig[task].jadeUsemin = defaultTasks[task];
         });
 
         //process tasks
-        var totalFiles = jadeUsemin.processTasks(processOptions);
+        var totalFiles = jadeUsemin.processTasks(extractedTargets, tasksConfig);
 
         //only run if there are src file located
         if (totalFiles > 0) {
             _.each(tasks, function (task) {
-                if (jadeUsemin[task].jadeUsemin.files.length) {
-                    //configure task for grunt
-                    grunt.config(task, jadeUsemin[task]);
+                if (tasksConfig[task].jadeUsemin.files.length) {
+                    //apply config to grunt (for runtime config)
+                    grunt.config(task, tasksConfig[task]);
                     //we will add this at the end
                     if (task !== 'concat') {
                         tasksToRun.unshift(task + ':jadeUsemin');

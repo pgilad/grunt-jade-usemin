@@ -86,36 +86,33 @@ exports.task = function (grunt) {
     /**
      * Process the extracted targets
      * @param params
-     * @param {Object} params.extractedTargets
-     * @param {Object} params.concat
-     * @param {Object} params.uglify
-     * @param {Object} params.cssmin
+     * @param {Object} extractedTargets
+     * @param {Object} tasks.concat
+     * @param {Object} tasks.uglify
+     * @param {Object} tasks.cssmin
      * @returns {number} filesProccessed Total files processed as source files
      */
-    var processTasks = function (params) {
-        var extractedTargets = params.extractedTargets;
-        var concat = params.concat;
-        var uglify = params.uglify;
-        var cssmin = params.cssmin;
+    var processTasks = function (extractedTargets, tasks) {
+        //basic tasks
+        var concat = tasks.concat;
+        var uglify = tasks.uglify;
+        var cssmin = tasks.cssmin;
 
-        //total src files processed
-        var filesProccessed = 0;
-
-        _.each(extractedTargets, function (item, target) {
-            addToConcatTask(concat, item.src, target);
+        return _.reduce(extractedTargets, function (fileCount, item, target) {
+            //always concat
+            addToConcatTask(concat.jadeUsemin, item.src, target);
             grunt.log.oklns('Target ' + target + ' contains ' + item.src.length + ' files.');
-            filesProccessed += item.src.length;
 
             if (item.type === 'js' && uglify) {
-                addTargetToTask(uglify, target);
+                addTargetToTask(uglify.jadeUsemin, target);
             } else if (item.type === 'css') {
-                addTargetToTask(cssmin, target);
+                addTargetToTask(cssmin.jadeUsemin, target);
             } else {
-                return null;
+                //unknown type
             }
-        });
 
-        return filesProccessed;
+            return fileCount + item.src.length;
+        }, 0);
     };
 
     var jadeParser = function (jadeContents, extractedTargets, options) {

@@ -4,6 +4,7 @@
 'use strict';
 
 var path = require('path');
+var os = require('os');
 var _ = require('lodash');
 
 var getFileSrc = function (str, type) {
@@ -14,6 +15,29 @@ var getFileSrc = function (str, type) {
         return str.match(/link.+href\s*=\s*['"]([^"']+)['"]/mi);
     }
     return null;
+};
+
+//set up default tasks options
+var defaultTasks = {
+    concat: {
+        options: {
+            banner: '',
+            footer: '',
+            separator: os.EOL
+        }
+    },
+    uglify: {
+        options: {
+            report: 'min',
+            preserveComments: 'some',
+            compress: false
+        }
+    },
+    cssmin: {
+        options: {
+            report: 'min'
+        }
+    }
 };
 
 /**
@@ -83,6 +107,23 @@ exports.task = function (grunt) {
         tempExtraction[target].src.push(src);
     };
 
+    var buildTaskTarget = function (task) {
+        var taskOptions = {};
+        //get task options (if exists)
+        taskOptions.global = grunt.config(task + '.options') || {};
+        //get task:jadeUsemin options (if exists)
+        taskOptions.options = grunt.config(task + '.jadeUsemin.options') || {};
+        //get default options for task
+        taskOptions.defaults = defaultTasks[task] && defaultTasks[task].options || {};
+        //merge ==> task:jadeUsemin.options > task.options > default.options
+        var opts = _.assign(taskOptions.defaults, taskOptions.global, taskOptions.options);
+        //build jadeUsemin target for this task
+        return {
+            files: [],
+            options: opts
+        };
+    };
+
     /**
      * Process the extracted targets
      * @param params
@@ -92,7 +133,7 @@ exports.task = function (grunt) {
      * @param {Object} tasks.cssmin
      * @returns {number} filesProccessed Total files processed as source files
      */
-    var processTasks = function (extractedTargets, tasks) {
+    var fillTargetFiles = function (extractedTargets, tasks, options) {
         //basic tasks
         var concat = tasks.concat;
         var uglify = tasks.uglify;
@@ -100,13 +141,13 @@ exports.task = function (grunt) {
 
         return _.reduce(extractedTargets, function (fileCount, item, target) {
             //always concat
-            addToConcatTask(concat.jadeUsemin, item.src, target);
+            addToConcatTask(concat, item.src, target);
             grunt.log.oklns('Target ' + target + ' contains ' + item.src.length + ' files.');
 
             if (item.type === 'js' && uglify) {
-                addTargetToTask(uglify.jadeUsemin, target);
+                addTargetToTask(uglify, target);
             } else if (item.type === 'css') {
-                addTargetToTask(cssmin.jadeUsemin, target);
+                addTargetToTask(cssmin, target);
             } else {
                 //unknown type
             }
@@ -224,6 +265,7 @@ exports.task = function (grunt) {
 
     return {
         jadeParser: jadeParser,
-        processTasks: processTasks
+        buildTaskTarget: buildTaskTarget,
+        fillTargetFiles: fillTargetFiles
     };
 };

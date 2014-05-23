@@ -10,29 +10,31 @@
 module.exports = function (grunt) {
     // load all npm grunt tasks
     require('load-grunt-tasks')(grunt);
-
     // Project configuration.
     grunt.initConfig({
-
         // Before generating any new files, remove any previously-created files.
         clean: {
             tests: ['tmp', 'test/compiled']
         },
         uglify: {
-            options: {
-                compress: true
-            }
+            // options: {
+            // compress: true
+            // }
         },
-
         // Configuration to be run (and then tested).
         jadeUsemin: {
             options: {
-                uglify: true,
                 replacePath: {
                     '#{baseDir}': 'test' //optional - key value to replace in src path
                 }
             },
             test: {
+                options: {
+                    tasks: {
+                        js: ['concat', 'uglify'],
+                        css: ['concat', 'cssmin']
+                    }
+                },
                 files: [{
                     dest: 'test/compiled/basic.jade',
                     src: 'test/fixtures/basic.jade'
@@ -47,7 +49,6 @@ module.exports = function (grunt) {
                 }]
             }
         },
-
         devUpdate: {
             main: {
                 options: {
@@ -64,21 +65,14 @@ module.exports = function (grunt) {
                 }
             }
         },
-
         // Unit tests.
         nodeunit: {
             tests: ['test/*.js']
         }
-
     });
-
     // Actually load this plugin's task(s).
     grunt.loadTasks('tasks');
-
     // Whenever the "test" task is run, first clean the "tmp" dir, then run this
     // plugin's task(s), then test the result.
     grunt.registerTask('test', ['clean', 'jadeUsemin:test', 'nodeunit']);
-
-    // By default, lint and run all tests.
-    grunt.registerTask('default', ['jshint', 'test']);
 };

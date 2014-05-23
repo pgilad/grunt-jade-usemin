@@ -36,6 +36,12 @@ The steps of this plugin are as follows:
 
 Currently only 2 types of build blocks are supported: `css` and `js`.
 
+#### New in version 0.4.0 and 0.5.0
+
+- Write optimized jade files
+- Select which tasks to run for each filetype.
+ For example use `grunt-filerev` to add cache-busting to scripts/css.
+
 ### How to use in a Jade file
 
 This is most effectively used in conjunction with the environment variable in express
@@ -73,7 +79,7 @@ link(rel='stylesheet', href='/test/fixtures/style2.css')
 
 **jadeUsemin** will create a minified css file called style.min.css which is a concated and minified version of both styles.
 
-#### Optimized jade file output [**new in version 0.4.0**]
+### Optimized jade file output [**new in version 0.4.0**]
 
 `grunt-jade-usemin` has the option to output optimized jade files. This means you can remove the development build blocks
 and turn them into their optimized counterparts.

@@ -7,48 +7,28 @@
 
 'use strict';
 
-var os = require('os');
 var path = require('path');
 var _ = require('lodash');
-
-//set up default tasks options
-var defaultTasks = {
-    concat: {
-        options: {
-            banner: '',
-            footer: '',
-            separator: os.EOL
-        },
-        files: []
-    },
-    uglify: {
-        options: {
-            report: 'min',
-            preserveComments: 'some',
-            compress: false
-        },
-        files: []
-    },
-    cssmin: {
-        options: {
-            report: 'min'
-        },
-        files: []
-    }
-};
 
 module.exports = function (grunt) {
     var jadeUsemin = require('./lib/jade_usemin').task(grunt);
 
     grunt.registerMultiTask('jadeUsemin', 'concat, uglify & cssmin files with UseMin format', function () {
-        var tasks = [];
-        var extractedTargets = {};
-        var jadeSrc;
-
-        //set task options
         var options = this.options({
-            uglify: true
+            uglify: true, //DEPRECATION NOTICE: 0.6.0
+            tasks: {
+                js: ['concat', 'uglify'],
+                css: ['concat', 'cssmin']
+            }
         });
+        //DEPRECATION NOTICE: 0.6.0
+        //remove uglify from tasks.js if not specificed
+        if (!options.uglify) {
+            options.tasks.js = _.without(options.tasks.js, 'uglify');
+        }
+
+        var jadeSrc;
+        var extractedTargets = {};
 
         //iterate through each file object
         _.each(this.files, function (file) {
@@ -77,40 +57,33 @@ module.exports = function (grunt) {
             }
         });
 
-        //add tasks to run
-        tasks.push('concat', 'cssmin');
-        if (options.uglify) {
-            tasks.push('uglify');
-        }
-
+        //get unique tasks to setup
+        var tasks = _.unique(_.flatten(_.values(options.tasks)));
         var tasksConfig = {};
 
-        //setup according grunt tasks
+        //assign jadeUsemin target to each task
+        //building just the initial ugliy.jadeUsemin target
         _.each(tasks, function (task) {
-            //get task from user's config
-            tasksConfig[task] = grunt.config(task) || {};
-            //setup task:jadeUsemin target
-            tasksConfig[task].jadeUsemin = defaultTasks[task];
+            tasksConfig[task] = jadeUsemin.buildTaskTarget(task);
         });
 
-        //process tasks
-        var totalFiles = jadeUsemin.processTasks(extractedTargets, tasksConfig);
-
+        //fill task target with files
+        var totalFiles = jadeUsemin.fillTargetFiles(extractedTargets, tasksConfig, options);
         //only run if there are src file located
         var tasksToRun = [];
         if (totalFiles > 0) {
             _.each(_.without(tasks, 'concat'), function (task) {
                 //if task has any files to be added
-                if (tasksConfig[task].jadeUsemin.files.length) {
+                if (tasksConfig[task].files.length) {
                     //apply config to grunt (for runtime config)
-                    grunt.config(task, tasksConfig[task]);
+                    grunt.config(task + '.jadeUsemin', tasksConfig[task]);
                     //add task target to run
                     tasksToRun.push(task + ':jadeUsemin');
                 }
             });
 
             //make sure concat:jadeUsemin goes in first
-            grunt.config('concat', tasksConfig.concat);
+            grunt.config('concat.jadeUsemin', tasksConfig.concat);
             tasksToRun.unshift('concat:jadeUsemin');
         }
 

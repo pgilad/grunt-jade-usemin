@@ -74,30 +74,11 @@ var extractBuildPattern = function (str) {
     return null;
 };
 
-/**
- * Add Concat file target
- * @param {Object} concat
- * @param src
- * @param dest
- */
-var addToConcatTask = function (concat, src, dest) {
-    concat.files.push({
-        src: src,
-        dest: dest
-    });
-};
-
 var interpolateSrc = function (src, keys) {
     _.each(keys, function (path, key) {
         src = src.replace(key, path);
     });
     return src;
-};
-
-var addTargetToTask = function (task, target) {
-    var targetObj = {};
-    targetObj[target] = target;
-    task.files.push(targetObj);
 };
 
 exports.task = function (grunt) {
@@ -128,30 +109,17 @@ exports.task = function (grunt) {
      * Process the extracted targets
      * @param params
      * @param {Object} extractedTargets
-     * @param {Object} tasks.concat
-     * @param {Object} tasks.uglify
-     * @param {Object} tasks.cssmin
      * @returns {number} filesProccessed Total files processed as source files
      */
-    var fillTargetFiles = function (extractedTargets, tasks, options) {
-        //basic tasks
-        var concat = tasks.concat;
-        var uglify = tasks.uglify;
-        var cssmin = tasks.cssmin;
-
+    var fillTargetFiles = function (extractedTargets, tasksConfig, tasks) {
         return _.reduce(extractedTargets, function (fileCount, item, target) {
-            //always concat
-            addToConcatTask(concat, item.src, target);
             grunt.log.oklns('Target ' + target + ' contains ' + item.src.length + ' files.');
-
-            if (item.type === 'js' && uglify) {
-                addTargetToTask(uglify, target);
-            } else if (item.type === 'css') {
-                addTargetToTask(cssmin, target);
-            } else {
-                //unknown type
-            }
-
+            tasks[item.type].forEach(function (task) {
+                tasksConfig[task].files.push({
+                    dest: target,
+                    src: item.src
+                });
+            });
             return fileCount + item.src.length;
         }, 0);
     };

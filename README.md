@@ -79,7 +79,7 @@ link(rel='stylesheet', href='/test/fixtures/style2.css')
 
 **jadeUsemin** will create a minified css file called style.min.css which is a concated and minified version of both styles.
 
-### Optimized jade file output [**new in version 0.4.0**]
+### Optimized jade file output [new in version 0.4.0]
 
 `grunt-jade-usemin` has the option to output optimized jade files. This means you can remove the development build blocks
 and turn them into their optimized counterparts.

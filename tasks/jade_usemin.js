@@ -57,42 +57,42 @@ module.exports = function (grunt) {
             }
         });
 
+        //rules:
+        //1. concat always runs, and always first
+        //2. concat writes to target location
+        //3. all following tasks process the target location files, not the original
+
         //get unique tasks to setup
         var tasks = _.unique(_.flatten(_.values(options.tasks)));
         var tasksConfig = {};
 
         //assign jadeUsemin target to each task
-        //building just the initial ugliy.jadeUsemin target
+        //building just the initial uglify.jadeUsemin target
         _.each(tasks, function (task) {
             tasksConfig[task] = jadeUsemin.buildTaskTarget(task);
         });
 
         //fill task target with files
-        var totalFiles = jadeUsemin.fillTargetFiles(extractedTargets, tasksConfig, options);
+        var totalFiles = jadeUsemin.fillTargetFiles(extractedTargets, tasksConfig, options.tasks);
         //only run if there are src file located
         var tasksToRun = [];
-        if (totalFiles > 0) {
-            _.each(_.without(tasks, 'concat'), function (task) {
-                //if task has any files to be added
-                if (tasksConfig[task].files.length) {
-                    //apply config to grunt (for runtime config)
-                    grunt.config(task + '.jadeUsemin', tasksConfig[task]);
-                    //add task target to run
-                    tasksToRun.push(task + ':jadeUsemin');
-                }
-            });
 
-            //make sure concat:jadeUsemin goes in first
-            grunt.config('concat.jadeUsemin', tasksConfig.concat);
-            tasksToRun.unshift('concat:jadeUsemin');
-        }
+        _.each(tasks, function (task) {
+            //if task has any files to be added
+            if (tasksConfig[task].files.length) {
+                //apply config to grunt (for runtime config)
+                grunt.config(task + '.jadeUsemin', tasksConfig[task]);
+                //add task target to run
+                tasksToRun.push(task + ':jadeUsemin');
+            }
+        });
 
         //to run when completed
         tasksToRun.push('jadeUseminComplete');
 
         //assign a finalize task to notify user that task finished, and how many files processed
         grunt.registerTask('jadeUseminComplete', function () {
-            grunt.log.oklns('jadeUsemin finished after processing ' + totalFiles + ' files.');
+            grunt.log.oklns('jadeUsemin finished and processed ' + totalFiles + ' files.');
         });
 
         return grunt.task.run(tasksToRun);

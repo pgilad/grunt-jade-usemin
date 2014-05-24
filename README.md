@@ -251,9 +251,7 @@ dirTasks: ['filerev']
 
 This will parse the destination target as a directory, and not a file.
 
-**important note**
-
-If you use this option for any task, please make sure it is the last task that runs for a file type,
+**important note**  - If you use this option for any task, please make sure it is the last task that runs for a file type,
 as it will output a file with different name as the original target.
 
 #### Prefix

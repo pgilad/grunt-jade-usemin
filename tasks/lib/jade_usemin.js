@@ -105,23 +105,59 @@ exports.task = function (grunt) {
         };
     };
 
+    var processTasks = function (tasks, extractedTargets) {
+        var tasksToRun = [];
+        var curTask = {};
+        _.each(tasks, function (tasks, filetype) {
+            _.each(tasks, function (task, index) {
+                var targetName = 'jadeUsemin-' + filetype;
+                //build initial task config
+                curTask = buildTaskTarget(task);
+                var transformFn;
+                //first task in filetype runs the original files
+                if (index === 0) {
+                    transformFn = function (src, dest) {
+                        return {
+                            dest: dest,
+                            src: src
+                        };
+                    };
+                } else {
+                    transformFn = function (src, dest) {
+                        return {
+                            dest: dest,
+                            src: dest
+                        };
+                    };
+                }
+
+                fillTargetFiles({
+                    targets: extractedTargets,
+                    filetype: filetype,
+                    curTask: curTask,
+                    transformFn: transformFn
+                });
+
+                //if task has any files, configure it, and set to run
+                if (curTask.files.length) {
+                    grunt.config(task + '.' + targetName, curTask);
+                    tasksToRun.push(task + ':' + targetName);
+                }
+            });
+        });
+        return tasksToRun;
+    };
+
     /**
      * Process the extracted targets
-     * @param params
-     * @param {Object} extractedTargets
      * @returns {number} filesProccessed Total files processed as source files
      */
-    var fillTargetFiles = function (extractedTargets, tasksConfig, tasks) {
-        return _.reduce(extractedTargets, function (fileCount, item, target) {
-            grunt.log.oklns('Target ' + target + ' contains ' + item.src.length + ' files.');
-            tasks[item.type].forEach(function (task) {
-                tasksConfig[task].files.push({
-                    dest: target,
-                    src: item.src
-                });
-            });
-            return fileCount + item.src.length;
-        }, 0);
+    var fillTargetFiles = function (params) {
+        _.each(params.targets, function (details, target) {
+            if (params.filetype === details.type) {
+                params.curTask.files.push(params.transformFn(details.src, target));
+            }
+        });
     };
 
     var jadeParser = function (jadeContents, extractedTargets, options) {
@@ -234,6 +270,7 @@ exports.task = function (grunt) {
     return {
         jadeParser: jadeParser,
         buildTaskTarget: buildTaskTarget,
-        fillTargetFiles: fillTargetFiles
+        fillTargetFiles: fillTargetFiles,
+        processTasks: processTasks
     };
 };

@@ -58,41 +58,16 @@ module.exports = function (grunt) {
         });
 
         //rules:
-        //1. concat always runs, and always first
-        //2. concat writes to target location
-        //3. all following tasks process the target location files, not the original
-
-        //get unique tasks to setup
-        var tasks = _.unique(_.flatten(_.values(options.tasks)));
-        var tasksConfig = {};
-
-        //assign jadeUsemin target to each task
-        //building just the initial uglify.jadeUsemin target
-        _.each(tasks, function (task) {
-            tasksConfig[task] = jadeUsemin.buildTaskTarget(task);
-        });
-
-        //fill task target with files
-        var totalFiles = jadeUsemin.fillTargetFiles(extractedTargets, tasksConfig, options.tasks);
-        //only run if there are src file located
-        var tasksToRun = [];
-
-        _.each(tasks, function (task) {
-            //if task has any files to be added
-            if (tasksConfig[task].files.length) {
-                //apply config to grunt (for runtime config)
-                grunt.config(task + '.jadeUsemin', tasksConfig[task]);
-                //add task target to run
-                tasksToRun.push(task + ':jadeUsemin');
-            }
-        });
+        //1. first task in each filetype gets the original src files and target
+        //2. all following tasks in filetype get only the target file as src and dest
+        //3. each task is named task.jadeUsemin-filetype. eg: concat.jadeUsemin-js
+        var tasksToRun = jadeUsemin.processTasks(options.tasks, extractedTargets)
 
         //to run when completed
         tasksToRun.push('jadeUseminComplete');
-
         //assign a finalize task to notify user that task finished, and how many files processed
         grunt.registerTask('jadeUseminComplete', function () {
-            grunt.log.oklns('jadeUsemin finished and processed ' + totalFiles + ' files.');
+            grunt.log.oklns('jadeUsemin finished successfully.');
         });
 
         return grunt.task.run(tasksToRun);

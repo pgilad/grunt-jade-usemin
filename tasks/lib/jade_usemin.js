@@ -140,6 +140,8 @@ exports.task = function (grunt) {
 
     var processTasks = function (options, extractedTargets) {
         var tasksToRun = [];
+        //temp fix for filerev
+        var filerev = [];
         var curTask = {};
         var tasks = options.tasks;
         var dirTasks = options.dirTasks;
@@ -164,6 +166,12 @@ exports.task = function (grunt) {
                         //adjust target to be a dir if required
                         if (dirTasks && _.contains(dirTasks, task)) {
                             var newDest = path.dirname(dest);
+                            if (extractedTargets[dest].output) {
+                                filerev.push({
+                                    output: extractedTargets[dest].output,
+                                    dest: dest
+                                });
+                            }
                             dest = newDest;
                         }
                         return {
@@ -187,7 +195,24 @@ exports.task = function (grunt) {
                 }
             });
         });
-        return tasksToRun;
+        return {
+            tasksToRun: tasksToRun,
+            filerev: filerev
+        };
+    };
+
+    var rewriteRevs = function (summary, filerev) {
+        _.each(summary, function (newTarget, target) {
+            _.each(filerev, function (file) {
+                if (file.dest === target) {
+                    grunt.file.copy(file.output, file.output, {
+                        process: function (contents) {
+                            return contents.replace(target, newTarget);
+                        }
+                    });
+                }
+            });
+        });
     };
 
     /**
@@ -315,6 +340,7 @@ exports.task = function (grunt) {
         buildTaskTarget: buildTaskTarget,
         fillTargetFiles: fillTargetFiles,
         processTasks: processTasks,
-        iterateFiles: iterateFiles
+        iterateFiles: iterateFiles,
+        rewriteRevs: rewriteRevs
     };
 };

@@ -42,11 +42,14 @@ exports.jadeUsemin = {
         test.done();
     },
     autoprefixer: function (test) {
-        test.expect(2);
+        test.expect(3);
         fileCmp(test, 'autoprefixer.min.css');
         var filename = grunt.file.expand('test/compiled/filerev.min.*.js')[0];
         filename = path.basename(filename);
         fileCmp(test, filename, 'filerev.min.js');
+        var filerev = grunt.file.read('test/compiled/autoprefixer.jade');
+        // script(src='test/compiled/filerev.min.da5bd415.js')
+        test.ok(/test\/compiled\/filerev\.min\.(\w+)\.js/.test(filerev));
         test.done();
     }
 };

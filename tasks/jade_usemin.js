@@ -6,8 +6,6 @@
  */
 
 'use strict';
-
-var path = require('path');
 var _ = require('lodash');
 
 module.exports = function (grunt) {
@@ -21,6 +19,10 @@ module.exports = function (grunt) {
                 css: ['concat', 'cssmin']
             }
         });
+
+        if (options.dirTasks && typeof options.dirTasks === 'string') {
+            options.dirTasks = [options.dirTasks];
+        }
         //DEPRECATION NOTICE: 0.6.0
         //remove uglify from tasks.js if not specificed
         if (!options.uglify) {
@@ -33,7 +35,7 @@ module.exports = function (grunt) {
         //1. first task in each filetype gets the original src files and target
         //2. all following tasks in filetype get only the target file as src and dest
         //3. each task is named task.jadeUsemin-filetype. eg: concat.jadeUsemin-js
-        var tasksToRun = jadeUsemin.processTasks(options.tasks, extractedTargets);
+        var tasksToRun = jadeUsemin.processTasks(options, extractedTargets);
 
         //to run when completed
         tasksToRun.push('jadeUseminComplete');

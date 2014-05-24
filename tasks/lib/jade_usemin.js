@@ -137,9 +137,12 @@ exports.task = function (grunt) {
         return extractedTargets;
     };
 
-    var processTasks = function (tasks, extractedTargets) {
+    var processTasks = function (options, extractedTargets) {
         var tasksToRun = [];
         var curTask = {};
+        var tasks = options.tasks;
+        var dirTasks = options.dirTasks;
+
         _.each(tasks, function (tasks, filetype) {
             _.each(tasks, function (task, index) {
                 var targetName = 'jadeUsemin-' + filetype;
@@ -156,9 +159,14 @@ exports.task = function (grunt) {
                     };
                 } else {
                     transformFn = function (src, dest) {
+                        src = dest;
+                        //adjust target to be a dir if required
+                        if (dirTasks && _.contains(dirTasks, task)) {
+                            dest = path.dirname(dest);
+                        }
                         return {
                             dest: dest,
-                            src: dest
+                            src: src
                         };
                     };
                 }
@@ -196,7 +204,6 @@ exports.task = function (grunt) {
         var prefix = options.prefix;
         var replacePath = options.replacePath;
         var location = options.location;
-
         var buildPattern, target, type, insideBuildFirstItem = {}, optimizedSrc = [];
         var insideBuild = false;
         var tempExtraction = {};

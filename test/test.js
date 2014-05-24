@@ -1,9 +1,11 @@
 'use strict';
 var grunt = require('grunt');
+var path = require('path');
 
-var fileCmp = function (test, fileName) {
-    var actual = grunt.file.read('./test/compiled/' + fileName);
-    var expected = grunt.file.read('./test/expected/' + fileName);
+var fileCmp = function (test, origin, target) {
+    target = target || origin;
+    var actual = grunt.file.read('./test/compiled/' + origin);
+    var expected = grunt.file.read('./test/expected/' + target);
     test.equal(actual.trim(), expected.trim(), 'files should be equal');
 };
 
@@ -40,8 +42,11 @@ exports.jadeUsemin = {
         test.done();
     },
     autoprefixer: function (test) {
-        test.expect(1);
+        test.expect(2);
         fileCmp(test, 'autoprefixer.min.css');
+        var filename = grunt.file.expand('test/compiled/filerev.min.*.js')[0];
+        filename = path.basename(filename);
+        fileCmp(test, filename, 'filerev.min.js');
         test.done();
     }
 };

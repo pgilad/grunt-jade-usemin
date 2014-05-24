@@ -235,6 +235,26 @@ tasks: {
 }
 ```
 
+#### dirTasks
+
+Type: `string[]|string`
+Default: `null`
+
+If you have tasks that require a directory as destination (i.e [grunt-filerev](https://github.com/yeoman/grunt-filerev))
+than you can use the `dirTasks` option to specify those in an array or string.
+
+Example:
+```js
+dirTasks: ['filerev']
+// or dirTasks: 'filerev'
+```
+
+This will parse the destination target as a directory, and not a file.
+
+**important note**
+
+If you use this option for any task, please make sure it is the last task that runs for a file type,
+as it will output a file with different name as the original target.
 
 #### Prefix
 **String** `Default: ''`
@@ -269,9 +289,10 @@ grunt.initConfig({
     main: {
       options: {
         tasks: {
-            js: ['concat', 'uglify'],
-            css: ['concat', 'cssmin']
+            js: ['concat', 'uglify', 'filerev'],
+            css: ['concat', 'autoprefixer', cssmin']
         },
+        dirTasks: 'filerev',
         prefix: '', //optional - add prefix to the path [default='']
         replacePath: {
             '#{env}': 'dist' //optional - key value to replace in src path

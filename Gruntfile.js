@@ -46,11 +46,13 @@ module.exports = function (grunt) {
             advanced: {
                 options: {
                     tasks: {
-                        js: ['concat', 'uglify'],
-                        css: ['concat', 'cssmin', 'autoprefixer']
-                    }
+                        js: ['concat', 'uglify', 'filerev'],
+                        css: ['concat', 'autoprefixer', 'cssmin']
+                    },
+                    dirTasks: ['filerev']
                 },
                 files: [{
+                    dest: 'test/compiled/autoprefixer.jade',
                     src: 'test/fixtures/autoprefixer.jade'
                 }]
             }

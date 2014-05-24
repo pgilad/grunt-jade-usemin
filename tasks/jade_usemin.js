@@ -20,13 +20,15 @@ module.exports = function (grunt) {
             }
         });
 
-        if (options.dirTasks && typeof options.dirTasks === 'string') {
-            options.dirTasks = [options.dirTasks];
-        }
         //DEPRECATION NOTICE: 0.6.0
         //remove uglify from tasks.js if not specificed
         if (!options.uglify) {
             options.tasks.js = _.without(options.tasks.js, 'uglify');
+        }
+
+        //force dirTasks to always be an array
+        if (options.dirTasks && typeof options.dirTasks === 'string') {
+            options.dirTasks = [options.dirTasks];
         }
 
         var extractedTargets = jadeUsemin.iterateFiles(this.files, options);
@@ -41,6 +43,11 @@ module.exports = function (grunt) {
         tasksToRun.push('jadeUseminComplete');
         //assign a finalize task to notify user that task finished, and how many files processed
         grunt.registerTask('jadeUseminComplete', function () {
+            if (grunt.filerev && grunt.filerev.summary) {
+                //assets have changed names, we need to change that in optimized jade files
+                //if they exist
+                //TODO
+            }
             grunt.log.oklns('jadeUsemin finished successfully.');
         });
 

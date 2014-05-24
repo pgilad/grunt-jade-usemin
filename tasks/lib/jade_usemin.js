@@ -123,7 +123,8 @@ exports.task = function (grunt) {
                 var jadeContents = grunt.file.read(src);
                 //parse through optimizer
                 jadeContents = jadeParser(jadeContents, extractedTargets, _.assign(options, {
-                    location: src
+                    location: src,
+                    output: file.dest
                 }));
                 //concat jade file src
                 jadeSrc += jadeContents;
@@ -162,7 +163,8 @@ exports.task = function (grunt) {
                         src = dest;
                         //adjust target to be a dir if required
                         if (dirTasks && _.contains(dirTasks, task)) {
-                            dest = path.dirname(dest);
+                            var newDest = path.dirname(dest);
+                            dest = newDest;
                         }
                         return {
                             dest: dest,
@@ -204,6 +206,7 @@ exports.task = function (grunt) {
         var prefix = options.prefix;
         var replacePath = options.replacePath;
         var location = options.location;
+        var output = options.output;
         var buildPattern, target, type, insideBuildFirstItem = {}, optimizedSrc = [];
         var insideBuild = false;
         var tempExtraction = {};
@@ -232,7 +235,8 @@ exports.task = function (grunt) {
                     //default empty target
                     tempExtraction[target] = {
                         type: type,
-                        src: []
+                        src: [],
+                        output: output
                     };
                     insideBuild = true;
                 } else {

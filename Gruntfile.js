@@ -23,7 +23,7 @@ module.exports = function (grunt) {
                     '#{baseDir}': 'test' //optional - key value to replace in src path
                 }
             },
-            test: {
+            basic: {
                 options: {
                     tasks: {
                         js: ['concat', 'uglify'],
@@ -41,6 +41,17 @@ module.exports = function (grunt) {
                 }, {
                     src: 'test/fixtures/solvePath.jade',
                     dest: 'test/compiled/solvePath.jade'
+                }]
+            },
+            advanced: {
+                options: {
+                    tasks: {
+                        js: ['concat', 'uglify'],
+                        css: ['concat', 'cssmin', 'autoprefixer']
+                    }
+                },
+                files: [{
+                    src: 'test/fixtures/autoprefixer.jade'
                 }]
             }
         },
@@ -69,5 +80,10 @@ module.exports = function (grunt) {
     grunt.loadTasks('tasks');
     // Whenever the "test" task is run, first clean the "tmp" dir, then run this
     // plugin's task(s), then test the result.
-    grunt.registerTask('test', ['clean', 'jadeUsemin:test', 'nodeunit']);
+    grunt.registerTask('test', [
+        'clean',
+        'jadeUsemin:basic',
+        'jadeUsemin:advanced',
+        'nodeunit'
+    ]);
 };

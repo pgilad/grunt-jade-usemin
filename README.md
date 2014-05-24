@@ -139,7 +139,7 @@ jadeUsemin: {
                 js: ['concat', 'uglify']
             }
         },
-        files: ['./app/views/index.jade']
+        files: [{src:'./app/views/index.jade'}]
     }
 }
 //...
@@ -168,7 +168,7 @@ jadeUsemin: {
                 css: ['concat', 'cssmin']
             }
         },
-        files: ['./public/partials/index.jade']
+        files: [{src:'./public/partials/index.jade'}]
     }
 }
 //...

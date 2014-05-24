@@ -38,5 +38,10 @@ exports.jadeUsemin = {
         test.expect(1);
         fileCmp(test, 'solvePath.jade');
         test.done();
+    },
+    autoprefixer: function (test) {
+        test.expect(1);
+        fileCmp(test, 'autoprefixer.min.css');
+        test.done();
     }
 };

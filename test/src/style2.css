@@ -4,4 +4,5 @@ body {
 }
 h3 {
     text-decoration: underline;
+    animation: all linear 1s;
 }

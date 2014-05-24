@@ -105,6 +105,38 @@ exports.task = function (grunt) {
         };
     };
 
+    var iterateFiles = function (files, options) {
+        var jadeSrc;
+        var extractedTargets = {};
+        //iterate through each file object
+        _.each(files, function (file) {
+            //reset jade src
+            jadeSrc = '';
+            //handle file src
+            _.each(file.src, function (src) {
+                grunt.log.writeln('Processing jade file', src);
+                //skip non-jade files (could be re-written)
+                if (path.extname(src) !== '.jade') {
+                    return grunt.log.warn('Not processing %s because of unsupported extension: %s', src);
+                }
+                //get actual file contents
+                var jadeContents = grunt.file.read(src);
+                //parse through optimizer
+                jadeContents = jadeParser(jadeContents, extractedTargets, _.assign(options, {
+                    location: src
+                }));
+                //concat jade file src
+                jadeSrc += jadeContents;
+            });
+            //if there is a target file
+            if (file.dest) {
+                //write output
+                grunt.file.write(file.dest, jadeSrc);
+            }
+        });
+        return extractedTargets;
+    };
+
     var processTasks = function (tasks, extractedTargets) {
         var tasksToRun = [];
         var curTask = {};
@@ -271,6 +303,7 @@ exports.task = function (grunt) {
         jadeParser: jadeParser,
         buildTaskTarget: buildTaskTarget,
         fillTargetFiles: fillTargetFiles,
-        processTasks: processTasks
+        processTasks: processTasks,
+        iterateFiles: iterateFiles
     };
 };

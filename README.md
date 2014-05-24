@@ -31,7 +31,7 @@ The steps of this plugin are as follows:
 
 1. Scan **src** jade files.
 2. Locate **build blocks** defined by `<!-- build:type target -->`.
-3. Gather **css** and **js** files in build blocks and run them through concat, cssmin & uglify.
+3. Gather **css** and **js** files in build blocks and run them through defined tasks for each filetype.
 4. (**new in version 0.4.0**) Optionally output an optimized jade with with only targets to replace the build block.
 
 Currently only 2 types of build blocks are supported: `css` and `js`.
@@ -42,47 +42,51 @@ Currently only 2 types of build blocks are supported: `css` and `js`.
 - Select which tasks to run for each filetype.
  For example use `grunt-filerev` to add cache-busting to scripts/css.
 
-### How to use in a Jade file
+### Usage
 
-This is most effectively used in conjunction with the environment variable in express
-i.e `process.env` or `node env`.
+#### Basic Example
 
-**jadeUsemin** scans for the following line: `<!-- build:<type> <target> -->`.
-
-**jadeUsemin** then adds the scripts/styles inside the lines until it meets the closing line:
-`<!-- endbuild -->` Which signifies the end of a usemin build block.
-
-**Note:** for the following to work, you need to expose your `env` variable when rendering the jade file.
-
-This is an example `index.jade`:
-
+To simply use the task, define your build blocks like so:
 ```jade
-if env === 'development'
-    //-<!-- build:js test/compiled/compiled.min.js -->
-    script(src='/test/fixtures/script1.js')
-    script(src='/test/fixtures/script2.js')
-    //-<!-- endbuild -->
-else
-    script(src='/test/compiled/compiled.min.js')
-```
-
-Running **jadeUsemin** on this file will concat & uglify the script files `script1.js` and `script2.js`
-into a minified file `compiled.min.js`.
-
-Another example is using **jadeUsemin** with css files:
-```jade
-//-<!-- build:css test/compiled/style.min.css -->
-link(rel='stylesheet', href='/test/fixtures/style1.css')
-link(rel='stylesheet', href='/test/fixtures/style2.css')
+//-<!-- build:js public/js/scripts.min.js -->
+script(src='./src/js/script1.js')
+script(src='./src/js/script2.js')
 //-<!-- endbuild -->
 ```
 
-**jadeUsemin** will create a minified css file called style.min.css which is a concated and minified version of both styles.
+Then you need to define `grunt-jade-usemin` as a task in your `grunt config`.
+You can use the following setup to process the above pattern:
 
-### Optimized jade file output [new in version 0.4.0]
+```js
+//...
+jadeUsemin: {
+    scripts: {
+        options: {
+            tasks: {
+                js: ['concat', 'uglify']
+            }
+        },
+        files: [{
+            dest: './src/partials/index.jade',
+            src: './public/partials/index.jade'
+        }]
+    }
+}
+//...
+```
 
-`grunt-jade-usemin` has the option to output optimized jade files. This means you can remove the development build blocks
-and turn them into their optimized counterparts.
+Running `grunt jadeUsemin:scripts` will now concat and uglify `script1.js` and `script2.js`
+and output them as `public/js/scripts.min.js`. This will also output an optimized jade file
+that will remove the build block and contain:
+```jade
+script(src='public/js/scripts.min.js')
+```
+
+#### Optimized Jade Files (new from version 0.4.0)
+
+Writing target jade files is optional. `jadeUsemin` is smart enough that if you don't specify
+a target for your src jade files, it won't output a jade file. This is useful if you are working on
+server side jade files that build blocks still need to be optimized.
 
 In your grunt configuration you need to configure a destination file (see: [grunt files](http://gruntjs.com/configuring-tasks#files)).
 
@@ -103,24 +107,147 @@ link(rel='stylesheet', href='test/compiled/style.min.css')
 
 **Note:** in order to create the optimized target, `grunt-jade-usemin` takes the first src in the relevant build block found and uses that as a template
 
-### Available Options
+#### Server side jade example
 
-#### Uglify
-**Boolean** `Default: true`. Whether grunt-contrib-uglify should be run on JS files as well as concat.
-Specifying false will only concat the src js that are found.
-Anything else will default to true, which will also uglify the js files.
+This is most effectively used in conjunction with the environment variable in express
+i.e `process.env` or `node env`.
+
+**Note:** for the following to work, you need to expose your `env` variable when rendering the jade file.
+
+This is an example `index.jade`:
+
+```jade
+if env === 'development'
+    //-<!-- build:js public/js/compiled.min.js -->
+    script(src='/src/js/script1.js')
+    script(src='/src/js/script2.js')
+    //-<!-- endbuild -->
+else
+    script(src='/public/js/compiled.min.js')
+```
+
+Running **jadeUsemin** on this file will concat & uglify the script files `script1.js` and `script2.js`
+into a minified file `compiled.min.js`.
+
+And your `grunt config` can look something like this:
+```js
+//...
+jadeUsemin: {
+    scripts: {
+        options: {
+            tasks: {
+                js: ['concat', 'uglify']
+            }
+        },
+        files: ['./app/views/index.jade']
+    }
+}
+//...
+```
+
+#### Css usage example
+
+Another example is using **jadeUsemin** with css files:
+```jade
+//-<!-- build:css public/css/styles.min.css -->
+link(rel='stylesheet', href='/src/css/style1.css')
+link(rel='stylesheet', href='/src/css/style2.css')
+//-<!-- endbuild -->
+```
+
+**jadeUsemin** will create a minified css file called style.min.css which is a concated and minified version of both styles.
+
+Your can configure your `grunt config` like so:
+
+```js
+//...
+jadeUsemin: {
+    scripts: {
+        options: {
+            tasks: {
+                css: ['concat', 'cssmin']
+            }
+        },
+        files: ['./public/partials/index.jade']
+    }
+}
+//...
+```
+
+### API
+
+#### Build blocks
+
+Build blocks have a strict design, so that they may be correctly caught by the regex.
+```jade
+<!-- build:type target -->`
+<!-- endbuild -->
+```
+
+- Build blocks must be all of the same type (or filetype).
+- Currently only supported blocks are of `js` or `css` types.
+- If writing an optimized jade file, it uses the pattern of the first item to insert optimized script.
+
+#### Grunt Task
+
+Since version 0.5.0, tasks to run on build blocks are:
+
+- Configurable
+- Run in order you specify
+
+This gives you great flexibility in choosing which and how to run tasks on your build blocks.
+
+The main task you need to define is called `jadeUsemin`.
+
+Besides specifying the files object, you can use the following options:
+
+#### Tasks (New in version 0.5.0)
+
+This is an array of objects, where `key=filetype` and value is and array of tasks to run in orders.
+*Default* value is:
+
+```js
+tasks: {
+    js: ['concat', 'uglify'],
+    css: ['concat', 'cssmin']
+}
+```
+
+In order to allow you to configure your tasks, `jadeUsemin` looks in the following places,
+which are ordered by precedence:
+
+1. `task.jadeUsemin.options`. For example: `uglify.jadeUsemin.options`.
+2. `task.options`. For example: `uglify.options`.
+3. Predefined default options for task if they exists.
+
+This will allow you to control the options with which your tasks are being run on the build blocks.
+
+Please note that the first task in each filetype runs against the original src files, and writes
+the destination target file. All the rest of the tasks in the context of the filetype run on the 
+destination file.
+
+So basically saying - it makes the most sense to run `concat` first on the build blocks.
 
 #### Prefix
-**String** `Default: ''`. This adds some flexibility to where you keep your public folder. It
+**String** `Default: ''`.
+
+This adds some flexibility to where you keep your public folder. It
 allows you to add a prefix to the path.
 
 #### replacePath
- **Object** `Default: {}`. This option allows you to specify interpolation patterns for the source and build paths of your js/css.
+ **Object** `Default: {}`.
+ 
+This option allows you to specify interpolation patterns for the source and build paths of your js/css.
 Each key value you specify here will be interpolated in the src paths that the plugin finds.
 For example if you add: `'#{env}': 'dist'` then all occurrences of `#{env}` in src paths will be replaced with `dist`.
 This gives you the power to change the paths according to different working environments.
 
-### Gruntfile.js basic task
+#### Uglify (will be deprecated in version 0.6.0 - old behavior)
+**Boolean** `Default: true`. Whether grunt-contrib-uglify should be run on JS files as well as concat.
+Specifying false will only concat the src js that are found.
+Anything else will default to true, which will also uglify the js files.
+
+#### Gruntfile.js full example
 In your project's Gruntfile, add a section named `jadeUsemin` to the data object passed into `grunt.initConfig()`.
 
 ```js
@@ -128,7 +255,10 @@ grunt.initConfig({
   jadeUsemin: {
     main: {
       options: {
-        uglify: true, //whether to run uglify js besides concat [default=true]
+        tasks: {
+            js: ['concat', 'uglify'],
+            css: ['concat', 'cssmin']
+        },
         prefix: '', //optional - add prefix to the path [default='']
         replacePath: {
             '#{env}': 'dist' //optional - key value to replace in src path
@@ -140,25 +270,6 @@ grunt.initConfig({
         src: ['src/index.jade'],
         dest: 'dist/index.jade'
      }]
-    }
-  },
-})
-```
-
-### Usage Examples
-
-#### Default Options
-
-```js
-grunt.initConfig({
-  jadeUsemin: {
-    main: {
-      options: {
-        uglify:true
-      },
-      files: {
-        src: ['src/testing', 'src/123'],
-      }
     }
   },
 })

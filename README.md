@@ -174,27 +174,25 @@ jadeUsemin: {
 //...
 ```
 
-### API
+## API
 
-#### Build blocks
+### Build blocks
 
 Build blocks have a strict design, so that they may be correctly caught by the regex.
+
 ```jade
-<!-- build:type target -->`
+<!-- build:type target -->
 <!-- endbuild -->
 ```
 
 - Build blocks must be all of the same type (or filetype).
+- You can have as many different build blocks in the same file.
 - Currently only supported blocks are of `js` or `css` types.
 - If writing an optimized jade file, it uses the pattern of the first item to insert optimized script.
 
-#### Grunt Task
+### Grunt Task
 
-Since version 0.5.0, tasks to run on build blocks are:
-
-- Configurable
-- Run in order you specify
-
+Since version 0.5.0, tasks are *configurable* and *run in the order you specify*.
 This gives you great flexibility in choosing which and how to run tasks on your build blocks.
 
 The main task you need to define is called `jadeUsemin`.
@@ -229,13 +227,13 @@ destination file.
 So basically saying - it makes the most sense to run `concat` first on the build blocks.
 
 #### Prefix
-**String** `Default: ''`.
+**String** `Default: ''`
 
 This adds some flexibility to where you keep your public folder. It
 allows you to add a prefix to the path.
 
 #### replacePath
- **Object** `Default: {}`.
+ **Object** `Default: {}`
  
 This option allows you to specify interpolation patterns for the source and build paths of your js/css.
 Each key value you specify here will be interpolated in the src paths that the plugin finds.
@@ -243,7 +241,12 @@ For example if you add: `'#{env}': 'dist'` then all occurrences of `#{env}` in s
 This gives you the power to change the paths according to different working environments.
 
 #### Uglify (will be deprecated in version 0.6.0 - old behavior)
-**Boolean** `Default: true`. Whether grunt-contrib-uglify should be run on JS files as well as concat.
+**Boolean** `Default: true`
+
+Please note this is now controlled in the `tasks` option. This will still be supported
+until version 0.6.0
+
+Whether grunt-contrib-uglify should be run on JS files as well as concat.
 Specifying false will only concat the src js that are found.
 Anything else will default to true, which will also uglify the js files.
 

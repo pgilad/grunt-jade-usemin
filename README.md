@@ -221,10 +221,20 @@ which are ordered by precedence:
 This will allow you to control the options with which your tasks are being run on the build blocks.
 
 Please note that the first task in each filetype runs against the original src files, and writes
-the destination target file. All the rest of the tasks in the context of the filetype run on the 
+the destination target file. All the rest of the tasks in the context of the filetype run on the
 destination file.
 
 So basically saying - it makes the most sense to run `concat` first on the build blocks.
+
+**Example usage with [grunt-autoprefixer](https://github.com/nDmitry/grunt-autoprefixer)**
+
+```js
+tasks: {
+    js: ['concat', 'uglify'],
+    css: ['concat', 'autoprefixer', 'cssmin']
+}
+```
+
 
 #### Prefix
 **String** `Default: ''`
@@ -234,7 +244,7 @@ allows you to add a prefix to the path.
 
 #### replacePath
  **Object** `Default: {}`
- 
+
 This option allows you to specify interpolation patterns for the source and build paths of your js/css.
 Each key value you specify here will be interpolated in the src paths that the plugin finds.
 For example if you add: `'#{env}': 'dist'` then all occurrences of `#{env}` in src paths will be replaced with `dist`.

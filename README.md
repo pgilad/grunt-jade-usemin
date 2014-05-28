@@ -287,14 +287,14 @@ grunt.initConfig({
   jadeUsemin: {
     main: {
       options: {
-        tasks: {
+        tasks: { //optional if you want to use defaults
             js: ['concat', 'uglify', 'filerev'],
             css: ['concat', 'autoprefixer', 'cssmin']
         },
-        dirTasks: 'filerev',
-        prefix: '', //optional - add prefix to the path [default='']
-        replacePath: {
-            '#{env}': 'dist' //optional - key value to replace in src path
+        dirTasks: 'filerev', //optional
+        prefix: '',          //optional
+        replacePath: {       //optional
+            '#{env}': 'dist'
         }
       },
       files: [{

@@ -299,7 +299,7 @@ grunt.initConfig({
       },
       files: [{
         src: ['src/index.jade', 'src/index2.jade']
-      },
+      },{
         src: ['src/index.jade'],
         dest: 'dist/index.jade'
      }]

@@ -201,7 +201,8 @@ Besides specifying the files object, you can use the following options:
 
 #### Tasks (New in version 0.5.0)
 
-This is an array of objects, where `key=filetype` and value is and array of tasks to run in orders.
+This is an array of objects, where `key=filetype` and value is an array of tasks to be run in order.
+
 *Default* value is:
 
 ```js
@@ -224,9 +225,9 @@ Please note that the first task in each filetype runs against the original src f
 the destination target file. All the rest of the tasks in the context of the filetype run on the
 destination file.
 
-So basically saying - it makes the most sense to run `concat` first on the build blocks.
+**So basically saying - it makes the most sense to run `concat` first on the build blocks.**
 
-**Example usage with [grunt-autoprefixer](https://github.com/nDmitry/grunt-autoprefixer)**
+##### Example usage with [grunt-autoprefixer](https://github.com/nDmitry/grunt-autoprefixer)**
 
 ```js
 tasks: {
@@ -251,7 +252,7 @@ dirTasks: ['filerev']
 
 This will parse the destination target as a directory, and not a file.
 
-**important note**  - If you use this option for any task, please make sure it is the last task that runs for a file type,
+**important note** - If you use this option for any task, please make sure it is the last task that runs for a file type,
 as it will output a file with different name as the original target.
 
 #### Prefix
@@ -288,7 +289,7 @@ grunt.initConfig({
       options: {
         tasks: {
             js: ['concat', 'uglify', 'filerev'],
-            css: ['concat', 'autoprefixer', cssmin']
+            css: ['concat', 'autoprefixer', 'cssmin']
         },
         dirTasks: 'filerev',
         prefix: '', //optional - add prefix to the path [default='']

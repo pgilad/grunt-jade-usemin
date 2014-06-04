@@ -10,10 +10,6 @@ var fileCmp = function (test, origin, target) {
 };
 
 exports.jadeUsemin = {
-    setUp: function (done) {
-        // setup here if necessary
-        done();
-    },
     basic: function (test) {
         test.expect(2);
         fileCmp(test, 'basic.min.js');
@@ -42,14 +38,27 @@ exports.jadeUsemin = {
         test.done();
     },
     autoprefixer: function (test) {
-        test.expect(3);
+        test.expect(1);
         fileCmp(test, 'autoprefixer.min.css');
+        test.done();
+    },
+    filerev: function (test) {
+        test.expect(2);
         var filename = grunt.file.expand('test/compiled/filerev.min.*.js')[0];
         filename = path.basename(filename);
         fileCmp(test, filename, 'filerev.min.js');
         var filerev = grunt.file.read('test/compiled/autoprefixer.jade');
         // script(src='test/compiled/filerev.min.da5bd415.js')
         test.ok(/test\/compiled\/filerev\.min\.(\w+)\.js/.test(filerev));
+        test.done();
+    },
+    withPrefix: function (test) {
+        test.expect(2);
+        var layout = grunt.file.read('test/compiled/layout.jade');
+        test.ok(/test\/compiled\/jquery\.min\.(\w+)\.js/.test(layout));
+        var filename = grunt.file.expand('test/compiled/jquery.min.*.js')[0];
+        filename = path.basename(filename);
+        test.ok(/jquery.min.(\w+).js/.test(filename));
         test.done();
     }
 };

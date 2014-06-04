@@ -7,7 +7,7 @@
  */
 'use strict';
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
     // load all npm grunt tasks
     require('load-grunt-tasks')(grunt);
     // Project configuration.
@@ -55,6 +55,20 @@ module.exports = function (grunt) {
                     dest: 'test/compiled/autoprefixer.jade',
                     src: 'test/fixtures/autoprefixer.jade'
                 }]
+            },
+            withPrefix: {
+                options: {
+                    tasks: {
+                        js: ['concat', 'uglify', 'filerev'],
+                        css: ['concat', 'cssmin']
+                    },
+                    dirTasks: ['filerev'],
+                    prefix: 'test/'
+                },
+                files: [{
+                    src: 'test/fixtures/layout.jade',
+                    dest: 'test/compiled/layout.jade'
+                }]
             }
         },
         devUpdate: {
@@ -86,6 +100,7 @@ module.exports = function (grunt) {
         'clean',
         'jadeUsemin:basic',
         'jadeUsemin:advanced',
+        'jadeUsemin:withPrefix',
         'nodeunit'
     ]);
 };

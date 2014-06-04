@@ -302,7 +302,7 @@ exports.task = function (grunt) {
 
                     //if prefix option exists than concat it
                     if (prefix) {
-                        src = prefix + src;
+                        src = path.join(prefix, src);
                     }
 
                     //if path actually exists

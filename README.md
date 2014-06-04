@@ -227,7 +227,7 @@ destination file.
 
 **So basically saying - it makes the most sense to run `concat` first on the build blocks.**
 
-##### Example usage with [grunt-autoprefixer](https://github.com/nDmitry/grunt-autoprefixer)**
+##### Example usage with [grunt-autoprefixer](https://github.com/nDmitry/grunt-autoprefixer)
 
 ```js
 tasks: {

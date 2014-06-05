@@ -203,12 +203,18 @@ exports.task = function (grunt) {
         };
     };
 
-    var rewriteRevs = function (summary, filerev) {
+    var rewriteRevs = function (summary, filerev, options) {
         _.each(summary, function (newTarget, target) {
             _.each(filerev, function (file) {
                 if (file.dest === target) {
                     grunt.file.copy(file.output, file.output, {
                         process: function (contents) {
+                            //remove targetPrefix from targets to adjust directory
+                            if (options.targetPrefix) {
+                                var len = options.targetPrefix.length;
+                                target = target.substr(len);
+                                newTarget = newTarget.substr(len);
+                            }
                             return contents.replace(target, newTarget);
                         }
                     });
@@ -236,7 +242,10 @@ exports.task = function (grunt) {
         var output = options.output;
         var targetPrefix = options.targetPrefix;
 
-        var buildPattern, target, type, insideBuildFirstItem = {}, optimizedSrc = [];
+        var buildPattern, target, type,
+            insideBuildFirstItem = {}, optimizedSrc = [],
+            unprefixedTarget;
+
         var insideBuild = false;
         var tempExtraction = {};
         var lines = jadeContents.split('\n');
@@ -262,6 +271,7 @@ exports.task = function (grunt) {
 
                     //add prefix to target as well
                     if (targetPrefix) {
+                        unprefixedTarget = target;
                         target = path.join(targetPrefix, target);
                     }
 
@@ -283,12 +293,12 @@ exports.task = function (grunt) {
                 grunt.verbose.writelns('Found endbuild pattern in line ', lineIndex);
                 extractedTargets[target] = {};
                 _.merge(extractedTargets[target], tempExtraction[target]);
-
                 grunt.log.oklns('Finished with target block:', target);
-                optimizedSrc.push(insideBuildFirstItem.line.replace(insideBuildFirstItem.src, target));
+                var oldTarget = unprefixedTarget || target;
+                optimizedSrc.push(insideBuildFirstItem.line.replace(insideBuildFirstItem.src, oldTarget));
                 //reset build vars
                 insideBuildFirstItem = {};
-                type = target = insideBuild = null;
+                type = target = insideBuild = unprefixedTarget = null;
             }
             //we are inside a build:<type> block
             else {

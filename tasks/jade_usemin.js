@@ -23,7 +23,8 @@ module.exports = function (grunt) {
         //DEPRECATION NOTICE: 0.6.0
         //remove uglify from tasks.js if not specificed
         if (!options.uglify) {
-            grunt.log.subhead('Uglify option was deprecated in version 0.5.0. Please see the tasks option');
+            grunt.log.subhead('*Deprecation Notice* - Uglify option was deprecated in version 0.5.0.' +
+                ' Please see the tasks option');
             options.tasks.js = _.without(options.tasks.js, 'uglify');
         }
 
@@ -59,7 +60,7 @@ module.exports = function (grunt) {
             //apply name fix for filerev
             if (grunt.filerev && grunt.filerev.summary) {
                 //replace file revs in target jade files
-                jadeUsemin.rewriteRevs(grunt.filerev.summary, filerev);
+                jadeUsemin.rewriteRevs(grunt.filerev.summary, filerev, options);
             }
             grunt.log.oklns('jadeUsemin finished successfully.');
         });

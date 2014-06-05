@@ -55,7 +55,7 @@ exports.jadeUsemin = {
     withPrefix: function (test) {
         test.expect(2);
         var layout = grunt.file.read('test/compiled/layout.jade');
-        test.ok(/test\/compiled\/jquery\.min\.(\w+)\.js/.test(layout));
+        test.ok(/compiled\/jquery\.min\.(\w+)\.js/.test(layout));
         var filename = grunt.file.expand('test/compiled/jquery.min.*.js')[0];
         filename = path.basename(filename);
         test.ok(/jquery.min.(\w+).js/.test(filename));

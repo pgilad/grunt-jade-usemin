@@ -23,12 +23,23 @@ module.exports = function (grunt) {
         //DEPRECATION NOTICE: 0.6.0
         //remove uglify from tasks.js if not specificed
         if (!options.uglify) {
+            grunt.log.subhead('Uglify option was deprecated in version 0.5.0. Please see the tasks option');
             options.tasks.js = _.without(options.tasks.js, 'uglify');
         }
 
         //force dirTasks to always be an array
         if (options.dirTasks && typeof options.dirTasks === 'string') {
             options.dirTasks = [options.dirTasks];
+        }
+
+        if (options.targetPrefix && !_.isString(options.targetPrefix)) {
+            grunt.fail.warn('Option targetPrefix must be a string');
+            options.targetPrefix = null;
+        }
+
+        if (options.prefix && !_.isString(options.prefix)) {
+            grunt.fail.warn('Option prefix must be a string');
+            options.prefix = null;
         }
 
         var extractedTargets = jadeUsemin.iterateFiles(this.files, options);

@@ -261,6 +261,12 @@ as it will output a file with different name as the original target.
 This adds some flexibility to where you keep your public folder. It
 allows you to add a prefix to the path.
 
+#### targetPrefix
+**String** `Default: ''`
+
+Same as the `prefix` but used for target location. If you specify a string here it will be prefixed
+to the output of the target file.
+
 #### replacePath
  **Object** `Default: {}`
 
@@ -293,6 +299,7 @@ grunt.initConfig({
         },
         dirTasks: 'filerev', //optional
         prefix: '',          //optional
+        targetPrefix: '',    //optional
         replacePath: {       //optional
             '#{env}': 'dist'
         }

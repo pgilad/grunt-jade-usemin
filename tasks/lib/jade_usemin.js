@@ -8,13 +8,15 @@ var os = require('os');
 var _ = require('lodash');
 
 var getFileSrc = function (str, type) {
+    var result;
     if (type === 'js') {
-        return str.match(/script.+src\s*=\s*['"]([^"']+)['"]/mi);
+        result = str.match(/script.+src\s*=\s*['"]([^"']+)['"]/mi);
     }
     if (type === 'css') {
-        return str.match(/link.+href\s*=\s*['"]([^"']+)['"]/mi);
+        result = str.match(/link.+href\s*=\s*['"]([^"']+)['"]/mi);
     }
-    return null;
+
+    return (result || [])[1];
 };
 
 //set up default tasks options
@@ -232,6 +234,8 @@ exports.task = function (grunt) {
         var replacePath = options.replacePath;
         var location = options.location;
         var output = options.output;
+        var targetPrefix = options.targetPrefix;
+
         var buildPattern, target, type, insideBuildFirstItem = {}, optimizedSrc = [];
         var insideBuild = false;
         var tempExtraction = {};
@@ -252,8 +256,13 @@ exports.task = function (grunt) {
                     target = buildPattern.target;
                     //TODO altPath = buildPattern.altPath;
 
-                    if (type !== 'css' && type !== 'js') {
+                    if (!_.contains(['css', 'js'], type)) {
                         grunt.log.warn('Unsupported build type: ' + type);
+                    }
+
+                    //add prefix to target as well
+                    if (targetPrefix) {
+                        target = path.join(targetPrefix, target);
                     }
 
                     grunt.verbose.writelns('Found build:<type> pattern in line:', lineIndex);
@@ -288,9 +297,7 @@ exports.task = function (grunt) {
                 }
 
                 var src = getFileSrc(line, type);
-
-                if (src && src[1]) {
-                    src = src[1];
+                if (src) {
                     //assign first source
                     insideBuildFirstItem.src = insideBuildFirstItem.src || src;
                     insideBuildFirstItem.line = insideBuildFirstItem.line || line;
@@ -300,7 +307,7 @@ exports.task = function (grunt) {
                         src = src.substr(1);
                     }
 
-                    //if prefix option exists than concat it
+                    //add prefix to src
                     if (prefix) {
                         src = path.join(prefix, src);
                     }
@@ -311,16 +318,14 @@ exports.task = function (grunt) {
                     } else {
                         //attempt to resolve path relative to location (where jade file is)
                         //TODO: use altPath
-                        var locationPath = path.dirname(location);
-                        var newSrcPath = path.resolve(locationPath, src);
                         grunt.verbose.writelns('Src file ' + src + " wasn't found. Looking for it relative to jade file");
-
-                        //let's see if we found it
+                        var newSrcPath = path.resolve(path.dirname(location), src);
                         if (grunt.file.exists(newSrcPath)) {
+                            //new src path exists
                             addSrcToTarget(tempExtraction, target, newSrcPath);
-                        }
-                        //src file wasn't found
-                        else {
+                        } else {
+                            grunt.verbose.writelns('Src file ' + newSrcPath + " wasn't found relative to jade file as well.");
+                            //src file wasn't found
                             grunt.log.warn("Found script src that doesn't exist: " + src);
                         }
                     }

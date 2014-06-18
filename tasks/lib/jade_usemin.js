@@ -206,7 +206,9 @@ exports.task = function (grunt) {
     var rewriteRevs = function (summary, filerev, options) {
         _.each(summary, function (newTarget, target) {
             _.each(filerev, function (file) {
-                if (file.dest === target) {
+                var dest = file.dest.replace(/\\/g, "/").replace('\\', '/');
+                var compareTarget = target.replace(/\\/g, "/").replace('\\', '/');
+                if (dest === compareTarget) {
                     grunt.file.copy(file.output, file.output, {
                         process: function (contents) {
                             //remove targetPrefix from targets to adjust directory
@@ -215,6 +217,8 @@ exports.task = function (grunt) {
                                 target = target.substr(len);
                                 newTarget = newTarget.substr(len);
                             }
+                            target = target.replace(/\\/g, "/").replace('\\', '/');
+                            newTarget = newTarget.replace(/\\/g, "/").replace('\\', '/');
                             return contents.replace(target, newTarget);
                         }
                     });

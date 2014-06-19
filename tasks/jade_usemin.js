@@ -60,7 +60,7 @@ module.exports = function (grunt) {
             //apply name fix for filerev
             if (grunt.filerev && grunt.filerev.summary) {
                 //replace file revs in target jade files
-                jadeUsemin.rewriteRevs(grunt.filerev.summary, filerev, options);
+                jadeUsemin.rewriteRevs(grunt.filerev.summary, filerev, options.targetPrefix);
             }
             grunt.log.oklns('jadeUsemin finished successfully.');
         });

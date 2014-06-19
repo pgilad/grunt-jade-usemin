@@ -54,6 +54,9 @@ module.exports = function (grunt) {
                 files: [{
                     dest: 'test/compiled/autoprefixer.jade',
                     src: 'test/fixtures/autoprefixer.jade'
+                }, {
+                    dest: 'test/compiled/windowsPaths.jade',
+                    src: 'test/fixtures/windowsPaths.jade'
                 }]
             },
             withPrefix: {
@@ -70,6 +73,12 @@ module.exports = function (grunt) {
                     src: 'test/fixtures/layout.jade',
                     dest: 'test/compiled/layout.jade'
                 }]
+            }
+        },
+        copy: {
+            test: {
+                src: 'test/fixtures/windowsPaths.jade',
+                dest: 'test/compiled/windowsPaths.jade'
             }
         },
         devUpdate: {
@@ -102,6 +111,7 @@ module.exports = function (grunt) {
         'jadeUsemin:basic',
         'jadeUsemin:advanced',
         'jadeUsemin:withPrefix',
+        'copy:test',
         'nodeunit'
     ]);
 };

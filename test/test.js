@@ -1,6 +1,7 @@
 'use strict';
 var grunt = require('grunt');
 var path = require('path');
+var lib = require('../tasks/lib/jade_usemin').task(grunt);
 
 var fileCmp = function (test, origin, target) {
     target = target || origin;
@@ -60,5 +61,25 @@ exports.jadeUsemin = {
         filename = path.basename(filename);
         test.ok(/jquery.min.(\w+).js/.test(filename));
         test.done();
-    }
+    },
+    windowsPaths: function (test) {
+        test.expect(1);
+
+        var summary = {
+            'test\\compiled\\basic.min.js': 'test\\compiled\\basic.min.da5bd415.js'
+        };
+
+        var filerev = [{
+            output: 'test/compiled/windowsPaths.jade',
+            dest: 'test\\compiled\\basic.min.js'
+        }];
+
+        //rewrite with new paths
+        lib.rewriteRevs(summary, filerev);
+        //read the generated file
+        var file = grunt.file.read('test/compiled/windowsPaths.jade');
+        //make sure path is re-written correctly
+        test.ok(/test\/compiled\/basic\.min\.da5bd415\.js/.test(file));
+        test.done();
+    },
 };

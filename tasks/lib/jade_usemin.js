@@ -204,26 +204,39 @@ exports.task = function (grunt) {
         };
     };
 
-    var rewriteRevs = function (summary, filerev, options) {
-        _.each(summary, function (newTarget, target) {
+    /**
+     * rewriteRevs
+     *
+     * @param summary contains key values of { oldTarget: newTarget}
+     * @param filerev contains dictionary of {output: 'jade output', dest: 'oldTarget'}
+     * @param {String} [targetPrefix] A string to remove for targets
+     */
+    var rewriteRevs = function (summary, filerev, targetPrefix) {
+        _.each(summary, function (newTarget, oldTarget) {
             _.each(filerev, function (file) {
+                //apply a fix for windows paths. see https://github.com/pgilad/grunt-jade-usemin/pull/13
                 var dest = slash(file.dest);
-                var compareTarget = slash(target.replace(/\\/g, "/").replace('\\', '/'));
-                if (dest === compareTarget) {
-                    grunt.file.copy(file.output, file.output, {
-                        process: function (contents) {
-                            //remove targetPrefix from targets to adjust directory
-                            if (options.targetPrefix) {
-                                var len = options.targetPrefix.length;
-                                target = target.substr(len);
-                                newTarget = newTarget.substr(len);
-                            }
-                            target = slash(target);
-                            newTarget = slash(newTarget);
-                            return contents.replace(target, newTarget);
-                        }
-                    });
+                var compareTarget = slash(oldTarget);
+                //if paths aren't the same - skip
+                if (dest !== compareTarget) {
+                    return;
                 }
+
+                //re-write the file itself
+                grunt.file.copy(file.output, file.output, {
+                    process: function (contents) {
+                        //remove targetPrefix from targets to adjust directory
+                        if (targetPrefix) {
+                            var len = targetPrefix.length;
+                            oldTarget = oldTarget.substr(len);
+                            newTarget = newTarget.substr(len);
+                        }
+                        //apply a fix for windows paths. see https://github.com/pgilad/grunt-jade-usemin/pull/13
+                        oldTarget = slash(oldTarget);
+                        newTarget = slash(newTarget);
+                        return contents.replace(oldTarget, newTarget);
+                    }
+                });
             });
         });
     };
@@ -234,9 +247,10 @@ exports.task = function (grunt) {
      */
     var fillTargetFiles = function (params) {
         _.each(params.targets, function (details, target) {
-            if (params.filetype === details.type) {
-                params.curTask.files.push(params.transformFn(details.src, target));
+            if (params.filetype !== details.type) {
+                return;
             }
+            params.curTask.files.push(params.transformFn(details.src, target));
         });
     };
 

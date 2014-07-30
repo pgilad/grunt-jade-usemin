@@ -261,7 +261,7 @@ exports.task = function (grunt) {
         var output = options.output;
         var targetPrefix = options.targetPrefix;
 
-        var buildPattern, target, type,
+        var buildPattern, target, type, altPath,
             insideBuildFirstItem = {}, optimizedSrc = [],
             unprefixedTarget;
 
@@ -282,7 +282,7 @@ exports.task = function (grunt) {
                 if (buildPattern) {
                     type = buildPattern.type;
                     target = buildPattern.target;
-                    //TODO altPath = buildPattern.altPath;
+                    altPath = buildPattern.altPath;
 
                     if (!_.contains(['css', 'js'], type)) {
                         grunt.log.warn('Unsupported build type: ' + type);
@@ -299,7 +299,8 @@ exports.task = function (grunt) {
                     tempExtraction[target] = {
                         type: type,
                         src: [],
-                        output: output
+                        output: output,
+                        altPath: altPath
                     };
                     insideBuild = true;
                 } else {
@@ -344,7 +345,14 @@ exports.task = function (grunt) {
                     //if path actually exists
                     if (grunt.file.exists(src)) {
                         addSrcToTarget(tempExtraction, target, src);
-                    } else {
+                    }
+                    else if (tempExtraction[target].altPath) {
+                        var p = path.join(tempExtraction[target].altPath, src);
+                        if (grunt.file.exists(p)) {
+                            addSrcToTarget(tempExtraction, target, p);
+                        }
+                    }
+                    else {
                         //attempt to resolve path relative to location (where jade file is)
                         //TODO: use altPath
                         grunt.verbose.writelns('Src file ' + src + " wasn't found. Looking for it relative to jade file");

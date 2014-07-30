@@ -41,7 +41,11 @@ module.exports = function (grunt) {
                 }, {
                     src: 'test/fixtures/solvePath.jade',
                     dest: 'test/compiled/solvePath.jade'
-                }]
+                }, {
+                    src: 'test/fixtures/alternate.jade',
+                    dest: 'test/compiled/alternate.jade'
+                },
+                ]
             },
             advanced: {
                 options: {
@@ -73,7 +77,21 @@ module.exports = function (grunt) {
                     src: 'test/fixtures/layout.jade',
                     dest: 'test/compiled/layout.jade'
                 }]
-            }
+            },
+            alternate: {
+                options: {
+                    tasks: {
+                        js: ['concat', 'uglify'],
+                        css: ['concat', 'cssmin']
+                    }
+                },
+                files: [{
+                    src: 'test/fixtures/alternate.jade',
+                    dest: 'test/compiled/alternate.jade'
+                },
+                ]
+            },
+
         },
         copy: {
             test: {

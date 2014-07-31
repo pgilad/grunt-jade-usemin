@@ -261,9 +261,9 @@ exports.task = function (grunt) {
         var output = options.output;
         var targetPrefix = options.targetPrefix;
 
-        var buildPattern, target, type, altPath,
-            insideBuildFirstItem = {}, optimizedSrc = [],
-            unprefixedTarget;
+        var buildPattern, target, type, altPath, unprefixedTarget;
+        var insideBuildFirstItem = {}, optimizedSrc = [];
+
 
         var insideBuild = false;
         var tempExtraction = {};
@@ -342,30 +342,25 @@ exports.task = function (grunt) {
                         src = path.join(prefix, src);
                     }
 
-                    //if path actually exists
+                    //original path exists
                     if (grunt.file.exists(src)) {
-                        addSrcToTarget(tempExtraction, target, src);
+                        return addSrcToTarget(tempExtraction, target, src);
                     }
-                    else if (tempExtraction[target].altPath) {
-                        var p = path.join(tempExtraction[target].altPath, src);
-                        if (grunt.file.exists(p)) {
-                            addSrcToTarget(tempExtraction, target, p);
+                    //try to find using alternate path
+                    if (tempExtraction[target].altPath) {
+                        var altPathSrc = path.join(tempExtraction[target].altPath, src);
+                        if (grunt.file.exists(altPathSrc)) {
+                            return addSrcToTarget(tempExtraction, target, altPathSrc);
                         }
                     }
-                    else {
-                        //attempt to resolve path relative to location (where jade file is)
-                        //TODO: use altPath
-                        grunt.verbose.writelns('Src file ' + src + " wasn't found. Looking for it relative to jade file");
-                        var newSrcPath = path.resolve(path.dirname(location), src);
-                        if (grunt.file.exists(newSrcPath)) {
-                            //new src path exists
-                            addSrcToTarget(tempExtraction, target, newSrcPath);
-                        } else {
-                            grunt.verbose.writelns('Src file ' + newSrcPath + " wasn't found relative to jade file as well.");
-                            //src file wasn't found
-                            grunt.log.warn("Found script src that doesn't exist: " + src);
-                        }
+                    //attempt to resolve path relative to location (where jade file is)
+                    grunt.verbose.writelns('Src file ' + src + " wasn't found. Looking for it relative to jade file");
+                    var newSrcPath = path.resolve(path.dirname(location), src);
+                    if (grunt.file.exists(newSrcPath)) {
+                        return addSrcToTarget(tempExtraction, target, newSrcPath);
                     }
+                    grunt.verbose.writelns('Src file ' + newSrcPath + " wasn't found relative to jade file as well.");
+                    grunt.log.warn("Found script src that doesn't exist: " + src);
                 }
             }
         });

@@ -2,7 +2,7 @@
  * grunt-jade-usemin
  *
  *
- * Copyright (c) 2013 Gilad Peleg
+ * Copyright ©2014 Gilad Peleg
  * Licensed under the MIT license.
  */
 'use strict';
@@ -41,11 +41,7 @@ module.exports = function (grunt) {
                 }, {
                     src: 'test/fixtures/solvePath.jade',
                     dest: 'test/compiled/solvePath.jade'
-                }, {
-                    src: 'test/fixtures/alternate.jade',
-                    dest: 'test/compiled/alternate.jade'
-                },
-                ]
+                }]
             },
             advanced: {
                 options: {
@@ -88,10 +84,8 @@ module.exports = function (grunt) {
                 files: [{
                     src: 'test/fixtures/alternate.jade',
                     dest: 'test/compiled/alternate.jade'
-                },
-                ]
+                }, ]
             },
-
         },
         copy: {
             test: {
@@ -129,6 +123,7 @@ module.exports = function (grunt) {
         'jadeUsemin:basic',
         'jadeUsemin:advanced',
         'jadeUsemin:withPrefix',
+        'jadeUsemin:alternate',
         'copy:test',
         'nodeunit'
     ]);

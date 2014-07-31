@@ -82,4 +82,11 @@ exports.jadeUsemin = {
         test.ok(/test\/compiled\/basic\.min\.da5bd415\.js/.test(file));
         test.done();
     },
+    altPath: function(test) {
+        test.expect(3);
+        fileCmp(test, 'alternate.jade');
+        fileCmp(test, 'alternate.min.css');
+        fileCmp(test, 'alternate.min.js');
+        test.done();
+    }
 };

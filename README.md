@@ -29,9 +29,9 @@ This project is based on the [grunt-usemin](https://github.com/yeoman/grunt-usem
 The steps of this plugin are as follows:
 
 1. Scan **src** jade files.
-2. Locate **build blocks** defined by `<!-- build:type target -->`.
+2. Locate **build blocks** defined by `<!-- build:type(alternate path) target -->`.
 3. Gather **css** and **js** files in build blocks and run them through defined tasks for each filetype.
-4. (**new in version 0.4.0**) Optionally output an optimized jade with with only targets to replace the build block.
+4. Optionally output an optimized jade with with only targets to replace the build block.
 
 Currently only 2 types of build blocks are supported: `css` and `js`.
 
@@ -124,7 +124,7 @@ link(rel='stylesheet', href='test/compiled/style.min.css')
 Build blocks have a strict design, so that they may be correctly caught by the regex.
 
 ```jade
-<!-- build:type target -->
+<!-- build:type(alternate path) target -->
 <!-- endbuild -->
 ```
 
@@ -132,10 +132,12 @@ Build blocks have a strict design, so that they may be correctly caught by the r
 - You can have as many different build blocks in the same file.
 - Currently only supported blocks are of `js` or `css` types.
 - If writing an optimized jade file, it uses the pattern of the first item to insert optimized script.
+- **alternate path** is **optional** (along with the parenthesis). If used this task will also try
+to find the script/css src files in the alternate path.
 
 ### Grunt Task
 
-Since version 0.5.0, tasks are *configurable* and *run in the order you specify*.
+Tasks are *configurable* and *run in the order you specify*.
 This gives you great flexibility in choosing which and how to run tasks on your build blocks.
 
 The main task you need to define is called `jadeUsemin`.

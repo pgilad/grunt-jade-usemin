@@ -7,7 +7,7 @@
  */
 'use strict';
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
     // load all npm grunt tasks
     require('load-grunt-tasks')(grunt);
     // Project configuration.
@@ -86,6 +86,12 @@ module.exports = function (grunt) {
                     dest: 'test/compiled/alternate.jade'
                 }, ]
             },
+            empty: {
+                files: [{
+                    dest: 'test/compiled/empty.jade',
+                    src: 'test/fixtures/empty.jade'
+                }]
+            }
         },
         copy: {
             test: {
@@ -124,6 +130,7 @@ module.exports = function (grunt) {
         'jadeUsemin:advanced',
         'jadeUsemin:withPrefix',
         'jadeUsemin:alternate',
+        'jadeUsemin:empty',
         'copy:test',
         'nodeunit'
     ]);

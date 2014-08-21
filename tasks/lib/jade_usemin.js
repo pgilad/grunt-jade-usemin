@@ -316,7 +316,8 @@ exports.task = function (grunt) {
                 grunt.log.oklns('Finished with target block:', target);
                 var oldTarget = unprefixedTarget || target;
 
-                if(insideBuildFirstItem.line) {
+                //make sure we got at least 1 src from this block
+                if (insideBuildFirstItem.line) {
                     optimizedSrc.push(insideBuildFirstItem.line.replace(insideBuildFirstItem.src, oldTarget));
                 }
 

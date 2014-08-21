@@ -315,7 +315,11 @@ exports.task = function (grunt) {
                 _.merge(extractedTargets[target], tempExtraction[target]);
                 grunt.log.oklns('Finished with target block:', target);
                 var oldTarget = unprefixedTarget || target;
-                optimizedSrc.push(insideBuildFirstItem.line.replace(insideBuildFirstItem.src, oldTarget));
+                
+                if(insideBuildFirstItem.line) {
+                    optimizedSrc.push(insideBuildFirstItem.line.replace(insideBuildFirstItem.src, oldTarget));
+                }
+                
                 //reset build vars
                 insideBuildFirstItem = {};
                 type = target = insideBuild = unprefixedTarget = null;

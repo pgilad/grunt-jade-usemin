@@ -1,6 +1,6 @@
 {
   "name": "grunt-jade-usemin",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Grunt plugin for running UseMin on Jade files",
   "homepage": "https://github.com/pgilad/grunt-jade-usemin",
   "bugs": "https://github.com/pgilad/grunt-jade-usemin/issues",

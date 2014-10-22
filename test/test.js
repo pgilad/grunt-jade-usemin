@@ -62,6 +62,15 @@ exports.jadeUsemin = {
         test.ok(/jquery.min.(\w+).js/.test(filename));
         test.done();
     },
+    withPrefixNoSlash: function (test) {
+        test.expect(2);
+        var layout = grunt.file.read('test/compiled/withPrefixNoSlash.jade');
+        test.ok(/compiled\/jquery\.min\.(\w+)\.js/.test(layout));
+        var filename = grunt.file.expand('test/compiled/jquery.min.*.js')[0];
+        filename = path.basename(filename);
+        test.ok(/jquery.min.(\w+).js/.test(filename));
+        test.done();
+    },
     windowsPaths: function (test) {
         test.expect(1);
 

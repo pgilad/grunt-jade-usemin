@@ -16,7 +16,11 @@ module.exports = function (grunt) {
             tasks: {
                 js: ['concat', 'uglify'],
                 css: ['concat', 'cssmin']
-            }
+            },
+            prefix: null,
+            targetPrefix: null,
+            dirTasks: null,
+            replacePath: {}
         });
 
         //force dirTasks to always be an array
@@ -24,14 +28,24 @@ module.exports = function (grunt) {
             options.dirTasks = [options.dirTasks];
         }
 
+        //targetPrefix must be a string
         if (options.targetPrefix && !_.isString(options.targetPrefix)) {
             grunt.warn('Option targetPrefix must be a string');
             options.targetPrefix = null;
         }
 
+        //if targetPrefix exists - make sure it ends with a /
+        if (options.targetPrefix && options.targetPrefix.slice(-1) !== '/') {
+            options.targetPrefix += '/';
+        }
+
         if (options.prefix && !_.isString(options.prefix)) {
             grunt.warn('Option prefix must be a string');
             options.prefix = null;
+        }
+
+        if (options.prefix && options.prefix.slice(-1) !== '/') {
+            options.prefix += '/';
         }
 
         var extractedTargets = jadeUsemin.iterateFiles(this.files, options);

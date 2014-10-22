@@ -50,9 +50,11 @@ exports.jadeUsemin = {
         fileCmp(test, filename, 'filerev.min.js');
         var filerev = grunt.file.read('test/compiled/autoprefixer.jade');
         // script(src='test/compiled/filerev.min.da5bd415.js')
-        test.ok(/test\/compiled\/filerev\.min\.(\w+)\.js/.test(filerev));
+        test.ok(/test\/compiled\/filerev\.min\.(\w+)\.js/.test(filerev),
+            'Make sure autoprefixer.jade contains the revved asset');
         var filerev2 = grunt.file.read('test/compiled/filerev.jade');
-        test.ok(/test\/compiled\/filerev\.min\.(\w+)\.js/.test(filerev2));
+        test.ok(/test\/compiled\/filerev.min.(\w+).js/.test(filerev2),
+            'Make sure filerev.jade contains the revved asset');
         test.done();
     },
     withPrefix: function (test) {
@@ -93,7 +95,7 @@ exports.jadeUsemin = {
         test.ok(/test\/compiled\/basic\.min\.da5bd415\.js/.test(file));
         test.done();
     },
-    altPath: function(test) {
+    altPath: function (test) {
         test.expect(3);
         fileCmp(test, 'alternate.jade');
         fileCmp(test, 'alternate.min.css');

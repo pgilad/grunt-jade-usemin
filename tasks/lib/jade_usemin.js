@@ -151,10 +151,10 @@ exports.task = function (grunt) {
 
         _.each(tasks, function (tasks, filetype) {
             _.each(tasks, function (task, index) {
+                var transformFn;
                 var targetName = 'jadeUsemin-' + filetype;
                 //build initial task config
                 curTask = buildTaskTarget(task);
-                var transformFn;
                 //first task in filetype runs the original files
                 if (index === 0) {
                     transformFn = function (src, dest) {
@@ -163,23 +163,29 @@ exports.task = function (grunt) {
                             src: src
                         };
                     };
-                } else {
+                } else if (dirTasks && _.contains(dirTasks, task)) {
                     transformFn = function (src, dest) {
                         src = dest;
-                        //adjust target to be a dir if required
-                        if (dirTasks && _.contains(dirTasks, task)) {
-                            var newDest = path.dirname(dest);
-                            if (extractedTargets[dest].output) {
+                        var newDest = path.dirname(dest);
+                        if (extractedTargets[dest].output) {
+                            extractedTargets[dest].output.forEach(function (output) {
+                                console.log('Filename: jade_usemin.js', 'Line: 172', 'output:', output);
                                 filerev.push({
-                                    output: extractedTargets[dest].output,
+                                    output: output,
                                     dest: dest
                                 });
-                            }
-                            dest = newDest;
+                            });
                         }
                         return {
-                            dest: dest,
+                            dest: newDest,
                             src: src
+                        };
+                    };
+                } else {
+                    transformFn = function (src, dest) {
+                        return {
+                            dest: dest,
+                            src: dest
                         };
                     };
                 }
@@ -264,7 +270,6 @@ exports.task = function (grunt) {
         var buildPattern, target, type, altPath, unprefixedTarget;
         var insideBuildFirstItem = {}, optimizedSrc = [];
 
-
         var insideBuild = false;
         var tempExtraction = {};
         var lines = jadeContents.split('\n');
@@ -299,7 +304,7 @@ exports.task = function (grunt) {
                     tempExtraction[target] = {
                         type: type,
                         src: [],
-                        output: output,
+                        output: [output],
                         altPath: altPath
                     };
                     insideBuild = true;
@@ -311,8 +316,11 @@ exports.task = function (grunt) {
             //got to end of build: <!-- endbuild -->
             else if (line.match(/<!--\s*endbuild\s*-->/i) && type && target) {
                 grunt.verbose.writelns('Found endbuild pattern in line ', lineIndex);
-                extractedTargets[target] = {};
-                _.merge(extractedTargets[target], tempExtraction[target]);
+                //if target already exists, add it's output
+                if (extractedTargets[target]) {
+                    tempExtraction[target].output = tempExtraction[target].output.concat(extractedTargets[target].output);
+                }
+                extractedTargets[target] = _.merge({}, tempExtraction[target]);
                 grunt.log.oklns('Finished with target block:', target);
                 var oldTarget = unprefixedTarget || target;
 

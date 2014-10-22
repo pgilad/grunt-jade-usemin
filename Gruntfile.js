@@ -57,6 +57,9 @@ module.exports = function (grunt) {
                 }, {
                     dest: 'test/compiled/windowsPaths.jade',
                     src: 'test/fixtures/windowsPaths.jade'
+                }, {
+                    dest: 'test/compiled/filerev.jade',
+                    src: 'test/fixtures/filerev.jade'
                 }]
             },
             withPrefix: {

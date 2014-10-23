@@ -66,6 +66,19 @@ exports.jadeUsemin = {
         test.ok(/jquery.min.(\w+).js/.test(filename));
         test.done();
     },
+    withPrefixTwoFiles: function (test) {
+        test.expect(3);
+        var layout = grunt.file.read('test/compiled/layout.jade');
+        test.ok(/compiled\/jquery\.min\.(\w+)\.js/.test(layout),
+            'Make sure layout.jade contains the revved asset');
+        var layout2 = grunt.file.read('test/compiled/layout2.jade');
+        test.ok(/compiled\/jquery\.min\.(\w+)\.js/.test(layout2),
+            'Make sure layout2.jade contains the revved asset');
+        var filename = grunt.file.expand('test/compiled/jquery.min.*.js')[0];
+        filename = path.basename(filename);
+        test.ok(/jquery.min.(\w+).js/.test(filename));
+        test.done();
+    },
     withPrefixNoSlash: function (test) {
         test.expect(2);
         var layout = grunt.file.read('test/compiled/withPrefixNoSlash.jade');

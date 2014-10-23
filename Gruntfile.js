@@ -77,6 +77,24 @@ module.exports = function (grunt) {
                     dest: 'test/compiled/layout.jade'
                 }]
             },
+            withPrefixTwoFiles: {
+                options: {
+                    tasks: {
+                        js: ['concat', 'uglify', 'filerev'],
+                        css: ['concat', 'cssmin']
+                    },
+                    dirTasks: ['filerev'],
+                    prefix: 'test/',
+                    targetPrefix: 'test/'
+                },
+                files: [{
+                    src: 'test/fixtures/layout.jade',
+                    dest: 'test/compiled/layout.jade'
+                }, {
+                    src: 'test/fixtures/layout2.jade',
+                    dest: 'test/compiled/layout2.jade'
+                }]
+            },
             withPrefixNoSlash: {
                 options: {
                     tasks: {
@@ -147,6 +165,7 @@ module.exports = function (grunt) {
         'jadeUsemin:basic',
         'jadeUsemin:advanced',
         'jadeUsemin:withPrefix',
+        'jadeUsemin:withPrefixTwoFiles',
         'jadeUsemin:withPrefixNoSlash',
         'jadeUsemin:alternate',
         'jadeUsemin:empty',

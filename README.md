@@ -253,5 +253,9 @@ grunt.initConfig({
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
+## Contributors
+
+- Pavol Pitonak [https://github.com/ppitonak](https://github.com/ppitonak)
+
 ## License
 Copyright (c) 2014 Gilad Peleg. Licensed under the MIT license.

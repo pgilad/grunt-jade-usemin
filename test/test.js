@@ -48,44 +48,61 @@ exports.jadeUsemin = {
         var filename = grunt.file.expand('test/compiled/filerev.min.*.js')[0];
         filename = path.basename(filename);
         fileCmp(test, filename, 'filerev.min.js');
-        var filerev = grunt.file.read('test/compiled/autoprefixer.jade');
+
+        var compiledJade = 'test/compiled/autoprefixer.jade';
+        var filerev = grunt.file.read(compiledJade);
         // script(src='test/compiled/filerev.min.da5bd415.js')
         test.ok(/test\/compiled\/filerev\.min\.(\w+)\.js/.test(filerev),
-            'Make sure autoprefixer.jade contains the revved asset');
-        var filerev2 = grunt.file.read('test/compiled/filerev.jade');
+            'Make sure ' + compiledJade + ' contains the revved asset');
+
+        compiledJade = 'test/compiled/filerev.jade';
+        var filerev2 = grunt.file.read(compiledJade);
         test.ok(/test\/compiled\/filerev.min.(\w+).js/.test(filerev2),
-            'Make sure filerev.jade contains the revved asset');
+            'Make sure ' + compiledJade + ' contains the revved asset');
+
         test.done();
     },
     withPrefix: function (test) {
         test.expect(2);
-        var layout = grunt.file.read('test/compiled/layout.jade');
-        test.ok(/compiled\/jquery\.min\.(\w+)\.js/.test(layout));
+        var compiledJade = 'test/compiled/layout.jade';
+        var layout = grunt.file.read(compiledJade);
+        test.ok(/compiled\/jquery\.min\.(\w+)\.js/.test(layout),
+            'Make sure ' + compiledJade + ' has the revved asset');
+
         var filename = grunt.file.expand('test/compiled/jquery.min.*.js')[0];
         filename = path.basename(filename);
-        test.ok(/jquery.min.(\w+).js/.test(filename));
+        test.ok(/jquery.min.(\w+).js/.test(filename),
+            'Make sure the minified script is revved');
+
         test.done();
     },
     withPrefixTwoFiles: function (test) {
         test.expect(3);
-        var layout = grunt.file.read('test/compiled/layout.jade');
+        var compiledJade = 'test/compiled/layout-advanced.jade';
+        var layout = grunt.file.read(compiledJade);
         test.ok(/compiled\/jquery\.min\.(\w+)\.js/.test(layout),
-            'Make sure layout.jade contains the revved asset');
-        var layout2 = grunt.file.read('test/compiled/layout2.jade');
+            'Make sure ' + compiledJade + ' contains the revved asset');
+
+        compiledJade = 'test/compiled/layout-advanced2.jade';
+        var layout2 = grunt.file.read(compiledJade);
         test.ok(/compiled\/jquery\.min\.(\w+)\.js/.test(layout2),
-            'Make sure layout2.jade contains the revved asset');
+            'Make sure ' + compiledJade + ' contains the revved asset');
+
         var filename = grunt.file.expand('test/compiled/jquery.min.*.js')[0];
         filename = path.basename(filename);
         test.ok(/jquery.min.(\w+).js/.test(filename));
+
         test.done();
     },
     withPrefixNoSlash: function (test) {
         test.expect(2);
         var layout = grunt.file.read('test/compiled/withPrefixNoSlash.jade');
         test.ok(/compiled\/jquery\.min\.(\w+)\.js/.test(layout));
+
         var filename = grunt.file.expand('test/compiled/jquery.min.*.js')[0];
         filename = path.basename(filename);
         test.ok(/jquery.min.(\w+).js/.test(filename));
+
         test.done();
     },
     windowsPaths: function (test) {
@@ -106,6 +123,7 @@ exports.jadeUsemin = {
         var file = grunt.file.read('test/compiled/windowsPaths.jade');
         //make sure path is re-written correctly
         test.ok(/test\/compiled\/basic\.min\.da5bd415\.js/.test(file));
+
         test.done();
     },
     altPath: function (test) {

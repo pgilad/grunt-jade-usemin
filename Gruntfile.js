@@ -88,11 +88,11 @@ module.exports = function (grunt) {
                     targetPrefix: 'test/'
                 },
                 files: [{
-                    src: 'test/fixtures/layout.jade',
-                    dest: 'test/compiled/layout.jade'
+                    src: 'test/fixtures/layout-advanced.jade',
+                    dest: 'test/compiled/layout-advanced.jade'
                 }, {
-                    src: 'test/fixtures/layout2.jade',
-                    dest: 'test/compiled/layout2.jade'
+                    src: 'test/fixtures/layout-advanced2.jade',
+                    dest: 'test/compiled/layout-advanced2.jade'
                 }]
             },
             withPrefixNoSlash: {

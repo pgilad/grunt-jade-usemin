@@ -258,4 +258,5 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 - Pavol Pitonak [https://github.com/ppitonak](https://github.com/ppitonak)
 
 ## License
-Copyright (c) 2014 Gilad Peleg. Licensed under the MIT license.
+
+MIT @[Gilad Peleg](http://giladpeleg.com)

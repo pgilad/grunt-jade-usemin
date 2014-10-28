@@ -1,53 +1,55 @@
 {
-    "name": "grunt-jade-usemin",
-    "version": "0.10.1",
-    "description": "Grunt plugin for running usemin on Jade files",
-    "repository": "pgilad/grunt-jade-usemin",
-    "license": "MIT",
-    "author": {
-        "name": "Gilad Peleg",
-        "email": "giladp007@gmail.com",
-        "url": "http://giladpeleg.com"
-    },
-    "files": [
-        "tasks"
-    ],
-    "engines": {
-        "node": ">= 0.10.0"
-    },
-    "scripts": {
-        "test": "grunt test"
-    },
-    "keywords": [
-        "gruntplugin",
-        "jade",
-        "usemin",
-        "build",
-        "minify",
-        "assets",
-        "filerev"
-    ],
-    "dependencies": {
-        "grunt-contrib-concat": "^0.5.0",
-        "grunt-contrib-cssmin": "^0.10.0",
-        "grunt-contrib-uglify": "^0.6.0",
-        "lodash": "^2.4.1",
-        "slash": "^1.0.0"
-    },
-    "devDependencies": {
-        "grunt-autoprefixer": "^1.0.1",
-        "grunt-contrib-clean": "^0.6.0",
-        "grunt-contrib-copy": "^0.7.0",
-        "grunt-contrib-nodeunit": "^0.4.1",
-        "grunt-dev-update": "^0.9.0",
-        "grunt-filerev": "^2.1.0",
-        "load-grunt-tasks": "^0.6.0"
-    },
-    "peerDependencies": {
-        "grunt": "~0.4.4"
-    },
-    "contributors": [{
-        "name": "Pavol Pitonak",
-        "url": "https://github.com/ppitonak"
-    }]
+  "name": "grunt-jade-usemin",
+  "version": "0.10.1",
+  "description": "Grunt plugin for running usemin on Jade files",
+  "repository": "pgilad/grunt-jade-usemin",
+  "license": "MIT",
+  "author": {
+    "name": "Gilad Peleg",
+    "email": "giladp007@gmail.com",
+    "url": "http://giladpeleg.com"
+  },
+  "files": [
+    "tasks"
+  ],
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "keywords": [
+    "gruntplugin",
+    "jade",
+    "usemin",
+    "build",
+    "minify",
+    "assets",
+    "filerev"
+  ],
+  "dependencies": {
+    "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-cssmin": "^0.10.0",
+    "grunt-contrib-uglify": "^0.6.0",
+    "lodash": "^2.4.1",
+    "slash": "^1.0.0"
+  },
+  "devDependencies": {
+    "grunt-autoprefixer": "^1.0.1",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-copy": "^0.7.0",
+    "grunt-contrib-nodeunit": "^0.4.1",
+    "grunt-dev-update": "^1.0.0",
+    "grunt-filerev": "^2.1.1",
+    "load-grunt-tasks": "^1.0.0"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.4"
+  },
+  "contributors": [
+    {
+      "name": "Pavol Pitonak",
+      "url": "https://github.com/ppitonak"
+    }
+  ]
 }

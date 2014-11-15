@@ -166,7 +166,9 @@ exports.task = function (grunt) {
                 } else if (dirTasks && _.contains(dirTasks, task)) {
                     transformFn = function (src, dest) {
                         src = dest;
-                        var newDest = path.dirname(dest);
+                        //we may override destination folder for dirTasks
+                        var newDest = _.has(curTask.options, 'dest') ?
+                                        curTask.options.dest : path.dirname(dest);
                         if (extractedTargets[dest].output) {
                             extractedTargets[dest].output.forEach(function (output) {
                                 filerev.push({

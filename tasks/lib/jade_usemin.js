@@ -91,7 +91,7 @@ exports.task = function (grunt) {
         tempExtraction[target].src.push(src);
     };
 
-    var buildTaskTarget = function (task) {
+    var getCurTaskOptions = function (task) {
         var taskOptions = {};
         //get task options (if exists)
         taskOptions.global = grunt.config(task + '.options') || {};
@@ -141,32 +141,48 @@ exports.task = function (grunt) {
         return extractedTargets;
     };
 
+    /**
+     * Process the extracted targets
+     * @returns {number} filesProccessed Total files processed as source files
+     */
+    var getTargetFiles = function (params) {
+        var targets = params.targets;
+        var filetype = params.filetype;
+        var transformFn = params.transformFn;
+        return _.map(targets, function (details, target) {
+            if (filetype !== details.type) {
+                return;
+            }
+            return transformFn(details.src, target);
+        });
+    };
+
     var processTasks = function (options, extractedTargets) {
         var tasksToRun = [];
         //temp fix for filerev
         var filerev = [];
-        var curTask = {};
-        var tasks = options.tasks;
+        var taskKinds = options.tasks;
         var dirTasks = options.dirTasks;
 
-        _.each(tasks, function (tasks, filetype) {
+        _.each(taskKinds, function (tasks, filetype) {
+            var targetName = 'jadeUsemin-' + filetype;
             _.each(tasks, function (task, index) {
                 var transformFn;
-                var targetName = 'jadeUsemin-' + filetype;
                 //build initial task config
-                curTask = buildTaskTarget(task);
+                var curTask = getCurTaskOptions(task);
                 //first task in filetype runs the original files
                 if (index === 0) {
                     transformFn = function (src, dest) {
                         return {
-                            dest: dest,
-                            src: src
+                            src: src,
+                            dest: dest
                         };
                     };
-                } else if (dirTasks && _.contains(dirTasks, task)) {
+                } else if (_.contains(dirTasks, task)) {
+                    // a task that is a directory task
                     transformFn = function (src, dest) {
                         src = dest;
-                        var newDest = path.dirname(dest);
+                        var newDest = curTask.options.noDest ? null : path.dirname(dest);
                         if (extractedTargets[dest].output) {
                             extractedTargets[dest].output.forEach(function (output) {
                                 filerev.push({
@@ -181,20 +197,20 @@ exports.task = function (grunt) {
                         };
                     };
                 } else {
+                    // a task running mid stream
                     transformFn = function (src, dest) {
                         return {
-                            dest: dest,
-                            src: dest
+                            src: dest,
+                            dest: dest
                         };
                     };
                 }
-
-                fillTargetFiles({
+                var files = _.compact(getTargetFiles({
                     targets: extractedTargets,
                     filetype: filetype,
-                    curTask: curTask,
                     transformFn: transformFn
-                });
+                }));
+                curTask.files = curTask.files.concat(files);
 
                 //if task has any files, configure it, and set to run
                 if (curTask.files.length) {
@@ -252,18 +268,6 @@ exports.task = function (grunt) {
         });
     };
 
-    /**
-     * Process the extracted targets
-     * @returns {number} filesProccessed Total files processed as source files
-     */
-    var fillTargetFiles = function (params) {
-        _.each(params.targets, function (details, target) {
-            if (params.filetype !== details.type) {
-                return;
-            }
-            params.curTask.files.push(params.transformFn(details.src, target));
-        });
-    };
 
     var jadeParser = function (jadeContents, extractedTargets, options) {
         var prefix = options.prefix;
@@ -392,8 +396,6 @@ exports.task = function (grunt) {
 
     return {
         jadeParser: jadeParser,
-        buildTaskTarget: buildTaskTarget,
-        fillTargetFiles: fillTargetFiles,
         processTasks: processTasks,
         iterateFiles: iterateFiles,
         rewriteRevs: rewriteRevs

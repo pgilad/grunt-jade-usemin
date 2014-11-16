@@ -172,6 +172,22 @@ destination file.
 
 **So basically saying - it makes the most sense to run `concat` first on the build blocks.**
 
+##### Specifying no destination for directory tasks (such as filerev)
+
+`grunt-jade-usemin` will look in options for `noDest` and will just specify a `src` for the file
+
+So a possible way to configure `grunt-filerev` to rewrite the original files with the rev files would be:
+```js
+//in your grunt config
+filerev: {
+    jadeUsemin: {
+        options: {
+            noDest: true
+        }
+    }
+},
+```
+
 ##### Example usage with [grunt-autoprefixer](https://github.com/nDmitry/grunt-autoprefixer)
 
 ```js
@@ -184,7 +200,7 @@ tasks: {
 #### dirTasks
 
 Type: `string[]|string`
-Default: `null`
+Default: `[]`
 
 If you have tasks that require a directory as destination (i.e [grunt-filerev](https://github.com/yeoman/grunt-filerev))
 than you can use the `dirTasks` option to specify those in an array or string.

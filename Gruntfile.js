@@ -16,6 +16,13 @@ module.exports = function (grunt) {
         clean: {
             tests: ['tmp', 'test/compiled']
         },
+        filerev: {
+            jadeUsemin: {
+                options: {
+                    noDest: false
+                }
+            }
+        },
         // Configuration to be run (and then tested).
         jadeUsemin: {
             options: {

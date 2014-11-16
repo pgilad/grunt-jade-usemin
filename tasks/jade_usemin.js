@@ -19,7 +19,7 @@ module.exports = function (grunt) {
             },
             prefix: null,
             targetPrefix: null,
-            dirTasks: null,
+            dirTasks: [],
             replacePath: {}
         });
 

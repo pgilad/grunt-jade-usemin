@@ -35,12 +35,12 @@
     "slash": "^1.0.0"
   },
   "devDependencies": {
-    "grunt-autoprefixer": "^1.0.1",
+    "grunt-autoprefixer": "^2.0.0",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-copy": "^0.7.0",
     "grunt-contrib-nodeunit": "^0.4.1",
     "grunt-dev-update": "^1.0.1",
-    "grunt-filerev": "^2.1.1",
+    "grunt-filerev": "^2.1.2",
     "load-grunt-tasks": "^1.0.0"
   },
   "peerDependencies": {

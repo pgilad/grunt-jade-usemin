@@ -46,6 +46,9 @@ module.exports = function (grunt) {
                     src: 'test/fixtures/production.jade',
                     dest: 'test/compiled/production.jade'
                 }, {
+                      src: 'test/fixtures/linkPrefetch.jade',
+                      dest: 'test/compiled/linkPrefetch.jade'
+                }, {
                     src: 'test/fixtures/solvePath.jade',
                     dest: 'test/compiled/solvePath.jade'
                 }]

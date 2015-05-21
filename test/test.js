@@ -28,6 +28,11 @@ exports.jadeUsemin = {
         fileCmp(test, 'replacePath.min.js');
         test.done();
     },
+    linkPrefetch: function (test) {
+        test.expect(1);
+        fileCmp(test, 'linkPrefetch.jade');
+        test.done();
+    },
     production: function (test) {
         test.expect(1);
         fileCmp(test, 'production.jade');

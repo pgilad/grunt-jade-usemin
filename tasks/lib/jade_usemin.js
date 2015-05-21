@@ -11,7 +11,8 @@ var slash = require('slash');
 var getFileSrc = function (str, type) {
     var result;
     if (type === 'js') {
-        result = str.match(/script.+src\s*=\s*['"]([^"']+)['"]/mi);
+        // either script(src='...') or link(src='...', rel='prefetch')
+        result = str.match(/[script|link].+src\s*=\s*['"]([^"']+)['"]/mi);
     }
     if (type === 'css') {
         result = str.match(/link.+href\s*=\s*['"]([^"']+)['"]/mi);

@@ -1,7 +1,7 @@
 /*
  * grunt-jade-usemin
  *
- * Copyright ©2014 Gilad Peleg
+ * Copyright © 2015 Gilad Peleg
  * Licensed under the MIT license.
  */
 

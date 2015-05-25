@@ -8,17 +8,26 @@ var os = require('os');
 var _ = require('lodash');
 var slash = require('slash');
 
-var getFileSrc = function (str, type) {
-    var result;
-    if (type === 'js') {
-        // either script(src='...') or link(src='...', rel='prefetch')
-        result = str.match(/[script|link].+src\s*=\s*['"]([^"']+)['"]/mi);
+function hasSrcResult(result) {
+    if (!Array.isArray(result)) {
+        return false;
     }
-    if (type === 'css') {
-        result = str.match(/link.+href\s*=\s*['"]([^"']+)['"]/mi);
-    }
+    return result[1];
+}
 
-    return (result || [])[1];
+var getFileSrc = function (str, type) {
+    //jshint unused:false
+    var result;
+    result = str.match(/script.+src\s*=\s*['"]([^"']+)['"]/mi);
+    if (hasSrcResult(result)) {
+        return result[1];
+    }
+    // also treats link rel='prefetch' href='something'
+    result = str.match(/link.+href\s*=\s*['"]([^"']+)['"]/mi);
+    if (hasSrcResult(result)) {
+        return result[1];
+    }
+    return false;
 };
 
 //set up default tasks options
@@ -269,7 +278,6 @@ exports.task = function (grunt) {
         });
     };
 
-
     var jadeParser = function (jadeContents, extractedTargets, options) {
         var prefix = options.prefix;
         var replacePath = options.replacePath;
@@ -278,7 +286,8 @@ exports.task = function (grunt) {
         var targetPrefix = options.targetPrefix;
 
         var buildPattern, target, type, altPath, unprefixedTarget;
-        var insideBuildFirstItem = {}, optimizedSrc = [];
+        var insideBuildFirstItem = {},
+            optimizedSrc = [];
 
         var insideBuild = false;
         var tempExtraction = {};
@@ -389,7 +398,7 @@ exports.task = function (grunt) {
         });
 
         if (insideBuild) {
-            grunt.fatal("Couldn't find '<!-- endbuild -->' in file: " + location + ", target: " + target);
+            grunt.fatal("Couldn't find '<!-- endbuild -->' in file: " + location + ', target: ' + target);
         }
         //return optimized src
         return optimizedSrc.join('\n');

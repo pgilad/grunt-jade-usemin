@@ -9,6 +9,10 @@
 var _ = require('lodash');
 
 module.exports = function (grunt) {
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+
     var jadeUsemin = require('./lib/jade_usemin').task(grunt);
 
     grunt.registerMultiTask('jadeUsemin', 'concat, uglify & cssmin files with UseMin format', function () {

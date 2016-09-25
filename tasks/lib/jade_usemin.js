@@ -8,6 +8,8 @@ var os = require('os');
 var _ = require('lodash');
 var slash = require('slash');
 
+var allowedExtnames = ['.jade', '.pug'];
+
 function hasSrcResult(result) {
     if (!Array.isArray(result)) {
         return false;
@@ -129,7 +131,7 @@ exports.task = function (grunt) {
             _.forEach(file.src, function (src) {
                 grunt.log.writeln('Processing jade file', src);
                 //skip non-jade files (could be re-written)
-                if (path.extname(src) !== '.jade') {
+                if (allowedExtnames.indexOf(path.extname(src)) < 0) {
                     return grunt.log.warn('Not processing %s because of unsupported extension: %s', src);
                 }
                 //get actual file contents

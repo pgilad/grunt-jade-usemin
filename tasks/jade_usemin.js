@@ -6,7 +6,6 @@
  */
 
 'use strict';
-var _ = require('lodash');
 
 module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
@@ -33,7 +32,7 @@ module.exports = function (grunt) {
         }
 
         //targetPrefix must be a string
-        if (options.targetPrefix && !_.isString(options.targetPrefix)) {
+        if (options.targetPrefix && typeof options.targetPrefix !== 'string') {
             grunt.warn('Option targetPrefix must be a string');
             options.targetPrefix = null;
         }
@@ -43,7 +42,7 @@ module.exports = function (grunt) {
             options.targetPrefix += '/';
         }
 
-        if (options.prefix && !_.isString(options.prefix)) {
+        if (options.prefix && typeof options.prefix !== 'string') {
             grunt.warn('Option prefix must be a string');
             options.prefix = null;
         }

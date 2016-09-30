@@ -3,9 +3,13 @@
  */
 'use strict';
 
-var path = require('path');
+var assign = require('lodash/assign');
+var compact = require('lodash/compact');
+var forEach = require('lodash/forEach');
+var includes = require('lodash/includes');
+var map = require('lodash/map');
 var os = require('os');
-var _ = require('lodash');
+var path = require('path');
 var slash = require('slash');
 
 function hasSrcResult(result) {
@@ -88,7 +92,7 @@ var extractBuildPattern = function (str) {
 };
 
 var interpolateSrc = function (src, keys) {
-    _.forEach(keys, function (path, key) {
+    forEach(keys, function (path, key) {
         src = src.replace(key, path);
     });
     return src;
@@ -110,7 +114,7 @@ exports.task = function (grunt) {
         //get default options for task
         taskOptions.defaults = defaultTasks[task] && defaultTasks[task].options || {};
         //merge ==> task:jadeUsemin.options > task.options > default.options
-        var opts = _.assign(taskOptions.defaults, taskOptions.global, taskOptions.options);
+        var opts = assign({}, taskOptions.defaults, taskOptions.global, taskOptions.options);
         //build jadeUsemin target for this task
         return {
             files: [],
@@ -122,11 +126,11 @@ exports.task = function (grunt) {
         var jadeSrc;
         var extractedTargets = {};
         //iterate through each file object
-        _.forEach(files, function (file) {
+        forEach(files, function (file) {
             //reset jade src
             jadeSrc = '';
             //handle file src
-            _.forEach(file.src, function (src) {
+            forEach(file.src, function (src) {
                 grunt.log.writeln('Processing jade file', src);
                 //skip non-jade files (could be re-written)
                 if (path.extname(src) !== '.jade') {
@@ -135,7 +139,7 @@ exports.task = function (grunt) {
                 //get actual file contents
                 var jadeContents = grunt.file.read(src);
                 //parse through optimizer
-                jadeContents = jadeParser(jadeContents, extractedTargets, _.assign(options, {
+                jadeContents = jadeParser(jadeContents, extractedTargets, assign({}, options, {
                     location: src,
                     output: file.dest
                 }));
@@ -159,7 +163,7 @@ exports.task = function (grunt) {
         var targets = params.targets;
         var filetype = params.filetype;
         var transformFn = params.transformFn;
-        return _.map(targets, function (details, target) {
+        return map(targets, function (details, target) {
             if (filetype !== details.type) {
                 return;
             }
@@ -174,9 +178,9 @@ exports.task = function (grunt) {
         var taskKinds = options.tasks;
         var dirTasks = options.dirTasks;
 
-        _.forEach(taskKinds, function (tasks, filetype) {
+        forEach(taskKinds, function (tasks, filetype) {
             var targetName = 'jadeUsemin-' + filetype;
-            _.forEach(tasks, function (task, index) {
+            forEach(tasks, function (task, index) {
                 var transformFn;
                 //build initial task config
                 var curTask = getCurTaskOptions(task);
@@ -188,7 +192,7 @@ exports.task = function (grunt) {
                             dest: dest
                         };
                     };
-                } else if (_.includes(dirTasks, task)) {
+                } else if (includes(dirTasks, task)) {
                     // a task that is a directory task
                     transformFn = function (src, dest) {
                         src = dest;
@@ -215,7 +219,7 @@ exports.task = function (grunt) {
                         };
                     };
                 }
-                var files = _.compact(getTargetFiles({
+                var files = compact(getTargetFiles({
                     targets: extractedTargets,
                     filetype: filetype,
                     transformFn: transformFn
@@ -256,8 +260,8 @@ exports.task = function (grunt) {
      * @param {String} [targetPrefix] A string to remove for targets
      */
     var rewriteRevs = function (summary, filerev, targetPrefix) {
-        _.forEach(summary, function (newTarget, oldTarget) {
-            _.forEach(filerev, function (file) {
+        forEach(summary, function (newTarget, oldTarget) {
+            forEach(filerev, function (file) {
                 //if paths aren't the same - skip
                 //apply a fix for windows paths. see https://github.com/pgilad/grunt-jade-usemin/pull/13
                 if (slash(file.dest) !== slash(oldTarget)) {
@@ -293,7 +297,7 @@ exports.task = function (grunt) {
         var tempExtraction = {};
         var lines = jadeContents.split('\n');
 
-        _.forEach(lines, function (line, lineIndex) {
+        forEach(lines, function (line, lineIndex) {
             //if still scanning for build:<type>
             if (!insideBuild) {
                 if (replacePath) {
@@ -308,7 +312,7 @@ exports.task = function (grunt) {
                     target = buildPattern.target;
                     altPath = buildPattern.altPath;
 
-                    if (!_.includes(['css', 'js'], type)) {
+                    if (includes(['css', 'js'], type)) {
                         grunt.log.warn('Unsupported build type: ' + type);
                     }
 
@@ -339,7 +343,7 @@ exports.task = function (grunt) {
                 if (extractedTargets[target]) {
                     tempExtraction[target].output = tempExtraction[target].output.concat(extractedTargets[target].output);
                 }
-                extractedTargets[target] = _.assign({}, tempExtraction[target]);
+                extractedTargets[target] = assign({}, tempExtraction[target]);
                 grunt.log.oklns('Finished with target block:', target);
                 var oldTarget = unprefixedTarget || target;
 

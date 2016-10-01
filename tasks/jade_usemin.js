@@ -16,14 +16,15 @@ module.exports = function (grunt) {
 
     grunt.registerMultiTask('jadeUsemin', 'concat, uglify & cssmin files with UseMin format', function () {
         var options = this.options({
+            dirTasks: [],
+            failOnMissingSource: false,
+            prefix: null,
+            replacePath: {},
+            targetPrefix: null,
             tasks: {
                 js: ['concat', 'uglify'],
                 css: ['concat', 'cssmin']
             },
-            prefix: null,
-            targetPrefix: null,
-            dirTasks: [],
-            replacePath: {}
         });
 
         //force dirTasks to always be an array

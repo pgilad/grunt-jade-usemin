@@ -290,6 +290,7 @@ exports.task = function (grunt) {
         var location = options.location;
         var output = options.output;
         var targetPrefix = options.targetPrefix;
+        var failOnMissingSource = options.failOnMissingSource;
 
         var buildPattern, target, type, altPath, unprefixedTarget;
         var insideBuildFirstItem = {},
@@ -398,7 +399,8 @@ exports.task = function (grunt) {
                         return addSrcToTarget(tempExtraction, target, newSrcPath);
                     }
                     grunt.verbose.writelns('Src file ' + newSrcPath + " wasn't found relative to jade file as well.");
-                    grunt.log.warn("Found script src that doesn't exist: " + src);
+                    var logAction = failOnMissingSource ? grunt.fatal : grunt.log.warn;
+                    logAction("Found script src that doesn't exist: " + src);
                 }
             }
         });

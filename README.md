@@ -91,7 +91,6 @@ that will remove the build block and contain:
 script(src='public/js/scripts.min.js')
 ```
 
-
 #### Optimized Jade Files
 
 Writing target jade files is optional. `jadeUsemin` is smart enough that if you don't specify
@@ -222,6 +221,11 @@ as it will output a file with different name as the original target.
 This adds some flexibility to where you keep your public folder. It
 allows you to add a prefix to the path.
 
+## failOnMissingSource
+**Boolean** `Default: false`
+
+Should task fail if there are missing source files in the `jade`. If `false` there will only be a warning.
+
 #### targetPrefix
 **String** `Default: ''`
 
@@ -248,10 +252,11 @@ grunt.initConfig({
             js: ['concat', 'uglify', 'filerev'],
             css: ['concat', 'autoprefixer', 'cssmin']
         },
-        dirTasks: 'filerev', //optional
-        prefix: '',          //optional
-        targetPrefix: '',    //optional
-        replacePath: {       //optional
+        dirTasks: 'filerev',       //optional
+        failOnMissingSource: false // optional
+        prefix: '',                //optional
+        targetPrefix: '',          //optional
+        replacePath: {             //optional
             '#{env}': 'dist'
         }
       },

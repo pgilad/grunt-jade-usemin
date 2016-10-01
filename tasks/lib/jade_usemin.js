@@ -314,7 +314,7 @@ exports.task = function (grunt) {
                     target = buildPattern.target;
                     altPath = buildPattern.altPath;
 
-                    if (includes(['css', 'js'], type)) {
+                    if (!includes(['css', 'js'], type)) {
                         grunt.log.warn('Unsupported build type: ' + type);
                     }
 

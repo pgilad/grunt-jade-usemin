@@ -280,4 +280,4 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ## License
 
-MIT @[Gilad Peleg](http://giladpeleg.com)
+MIT © [Gilad Peleg](https://www.giladpeleg.com)
